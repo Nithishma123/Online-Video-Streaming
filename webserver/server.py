@@ -106,9 +106,9 @@ def login():
     result = cursor.fetchall()
     cursor.close()
     if result:
-        return jsonify({'message': 'Login successful'}), 200
+        return jsonify({'message': 'Login successful', 'status': 200}), 200
     else:
-        return jsonify({'message': 'User not found'}), 400
+        return jsonify({'message': 'User not found', 'status': 400}), 400
 
 
 @app.route('/api/signup', methods=['POST'])
@@ -126,7 +126,12 @@ def signup():
                    {'name': name, 'emailid': emailid, 'phone': phone, 'age': age,
                     'gender': gender})
     g.conn.commit()
-    return jsonify({'message': 'Login successful'}), 200
+    return jsonify({'message': 'Login successful', 'status': 200}), 200
+
+
+@app.route('/home.html')
+def home_screen():
+    return render_template('home.html')
 
 
 if __name__ == "__main__":
