@@ -1,29 +1,58 @@
-<html>
-  <style>
-    body{ 
-      font-size: 15pt;
-      font-family: arial;
-    }
-  </style>
-
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <title>Video Streaming App</title>
+    <style>
+        #signupForm {
+            display: none;
+        }
+    </style>
+</head>
 <body>
-  <h1>Some famous Computer Scientists</h1>
-  <div>{{data}}</div>
 
-  <div>
-    {% for n in data %}
-    <div>{{n}}</div>
-    {% endfor %}
-  </div>
+    <div class="container">
+        <form id="loginForm" class="form">
+            <h2>Login</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+            <p class="message">Don't have an account? <a href="#" id="toggleSignup">Sign up</a></p>
+        </form>
 
-<p><a href="another">Go to the other page</a></p>
+        <form id="signupForm" class="form">
+            <h2>Sign Up</h2>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
 
-<form method="POST" action="/add">
-<p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
-</form>
+            <label for="emailid">Email ID:</label>
+            <input type="email" id="emailid" name="emailid" required>
 
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" required>
+
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="pass">Password:</label>
+            <input type="password" id="pass" name="pass" required>
+
+            <button type="submit">Sign Up</button>
+            <p class="message">Already have an account? <a href="#" id="toggleLogin">Login</a></p>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 </body>
-
-
 </html>
