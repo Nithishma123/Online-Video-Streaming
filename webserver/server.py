@@ -134,6 +134,46 @@ def home_screen():
     return render_template('home.html')
 
 
+@app.route('/api/movies/<int:category_id>', methods=['GET'])
+def get_all_movies(category_id):
+    cursor = g.conn.execute(text("select * from video_item_belongsto where category_id=:category_id"),
+                            {'category_id': category_id})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+@app.route('/api/categories', methods=['GET'])
+def get_all_categories():
+    cursor = g.conn.execute(text("select * from categories"))
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+@app.route('/api/genres', methods=['GET'])
+def get_all_genres():
+    cursor = g.conn.execute(text("select * from genre"))
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+@app.route('/api/movies/<int:genre_id>', methods=['GET'])
+def get_movie_by_genre(genre_id):
+    cursor = g.conn.execute(text("select * from linked_to l inner join video_item_belongsto v on v.video_id = "
+                                 "l.video_id where l.genre_id=:genre_id"),
+                            {'genre_id': genre_id})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+
 if __name__ == "__main__":
     import click
 
