@@ -10,12 +10,12 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, abort, jsonify
+from flask import Flask, request, render_template, g, redirect, Response, abort, jsonify, session
 import logging
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir, static_url_path='/static')
-
+app.secret_key = 'testkey'
 DATABASEURI = "postgresql://na3062:732244@34.74.171.121/proj1part2"
 
 #
@@ -106,6 +106,7 @@ def login():
     result = cursor.fetchall()
     cursor.close()
     if result:
+        session['user_id'] = result[0]['user_id']
         return jsonify({'message': 'Login successful', 'status': 200}), 200
     else:
         return jsonify({'message': 'User not found', 'status': 400}), 400
@@ -144,6 +145,7 @@ def get_all_movies(category_id):
     logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
+
 @app.route('/api/categories', methods=['GET'])
 def get_all_categories():
     cursor = g.conn.execute(text("select * from categories"))
@@ -152,6 +154,7 @@ def get_all_categories():
     cursor.close()
     logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
+
 
 @app.route('/api/genres', methods=['GET'])
 def get_all_genres():
@@ -197,6 +200,7 @@ def get_movie_by_actor(actor_id):
     logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
+
 @app.route('/api/trending', methods=['GET'])
 def get_trending():
     cursor = g.conn.execute(text("select v.video_id, v.name, v.description, v.duration, v.video_link, v.category_id, "
@@ -205,6 +209,24 @@ def get_trending():
                                  "inner join video_item_belongsto v on r.video_id = v.video_id group by v.video_id, "
                                  "v.name, v.description, v.duration, v.video_link, v.category_id order by rating desc "
                                  "limit 10"))
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/recently-watched', methods=['GET'])
+def get_recently_viewed():
+    logging.debug(session.get('user_id'))
+    cursor = g.conn.execute(text("SELECT ui.user_id, ui.name as username, v.video_id, v.name,v.description, "
+                                 "v.duration, "
+                                 "vw.timestamp FROM "
+                                 "USER_INFORMATION ui "
+                                 "INNER JOIN VIEWED vw ON ui.user_id = vw.user_id INNER JOIN VIDEO_ITEM_BELONGSTO v "
+                                 "ON vw.video_id = v.video_id "
+                                 "WHERE vw.completed = 0::BIT and ui.user_id = :user_id ORDER BY vw.timestamp DESC "
+                                 "LIMIT 10;"), {'user_id': session.get('user_id')})
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()

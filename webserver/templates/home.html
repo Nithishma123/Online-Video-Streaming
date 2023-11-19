@@ -11,14 +11,13 @@
     <header>
         <nav>
             <ul>
-                <li><a href="#">Home</a></li>
+                <li><a href="#" id ="home">Home</a></li>
                 <li><a href="#" id="movies">Movies</a></li>
                 <li><a href="#" id="categories">Categories</a></li>
                 <li><a href="#" id="genres">Genres</a></li>
                 <li><a href="#" id="cast">Cast</a></li>
                 <li><a href="#" id="subscriptions">Subscriptions</a></li>
                 <li><a href="#" id="account">Account</a></li>
-                <!-- Add more navigation items as needed -->
             </ul>
         </nav>
     </header>
@@ -26,11 +25,13 @@
     <main>
         <section class="trending" id="trendingSection">
             <h2>Trending Now</h2>
-            <!-- Display trending content here -->
+             <div id="trendingContainer" class="trending-container">
+             </div>
         </section>
         <section class="recently-watched" id="recentlyWatchedSection">
             <h2>Recently watched</h2>
-            <!-- Display recently watched content here -->
+            <div id="watchedContainer" class="watched-container">
+             </div>
         </section>
         <section class="movies-list" id="moviesContainer">
              <div id="movieContainer" class="movie-container">
@@ -38,13 +39,16 @@
         </section>
 
        <section class="categories-list" id="categoriesContainer">
-    <div id="categoryContainer" class="categories-container">
-    </div>
-</section>
+           <div id="categoryContainer" class="categories-container">
+           </div>
+       </section>
         <section class="genres-list" id="genresContainer">
-    <div id="genreContainer" class="genre-container">
-    </div>
-</section>
+            <div id="genreContainer" class="genre-container">
+            </div>
+        </section>
+        <section class="cast-list" id="castContainer">
+            <div id="cContainer" class="cast-container"></div>
+        </section>
 
     </main>
 <script src="{{ url_for('static', filename='home.js') }}"></script>
