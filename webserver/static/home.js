@@ -39,8 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <h3>${movie.name}</h3>
             <p>${movie.description}</p>
             <p>Duration: ${movie.duration}</p>
-            <a href="${movie.video_link}" target="_blank">IMDb Link</a>
-        `;
+            <iframe src="${movie.video_link}" width="500px" height="300px"></iframe>`;
 
         return movieCard;
     }

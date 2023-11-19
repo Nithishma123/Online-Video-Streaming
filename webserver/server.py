@@ -220,7 +220,7 @@ def get_trending():
 def get_recently_viewed():
     logging.debug(session.get('user_id'))
     cursor = g.conn.execute(text("SELECT ui.user_id, ui.name as username, v.video_id, v.name,v.description, "
-                                 "v.duration, "
+                                 "v.duration,v.video_link, "
                                  "vw.timestamp FROM "
                                  "USER_INFORMATION ui "
                                  "INNER JOIN VIEWED vw ON ui.user_id = vw.user_id INNER JOIN VIDEO_ITEM_BELONGSTO v "
