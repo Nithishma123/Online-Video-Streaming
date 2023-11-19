@@ -562,10 +562,63 @@ function showProfileSection() {
         });
 }
 
+document.getElementById('newCardContainer').addEventListener('click', function (event) {
+        handleAddNewCard();
+    });
+
+function handleAddNewCard() {
+        // Hide other sections
+        hideAllSections();
+        document.getElementById('newCardContainer').style.display = 'block'
+        document.getElementById('addCardButton').style.display = 'none';
+        document.getElementById('newCardForm').style.display = 'block';
+    }
+
+document.getElementById('submitCardDetails').addEventListener('click', function (event) {
+        submitCardDetails();
+    });
+function submitCardDetails() {
+        // Get form data
+        var cardName = document.getElementById('cardName').value;
+        var cardType = document.getElementById('cardType').value;
+        var cardNumber = document.getElementById('cardNumber').value;
+        var expiryDate = document.getElementById('expiryDate').value;
+        var autopay = document.getElementById('autopay').value;
+
+        // Create an object with the form data
+        var formData = {
+            cardName: cardName,
+            cardType: cardType,
+            cardNumber: cardNumber,
+            expiryDate: expiryDate,
+            autopay: autopay
+        };
+
+        // Make API call using Fetch
+        fetch('http://127.0.0.1:8111/api/new-card', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.message === 'success') {
+                fetchAndDisplayCards()
+
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+
 function createCards(card) {
     const cardItem = document.createElement('div');
     cardItem.classList.add('card-item');
-
     cardItem.innerHTML = `
     <h3>Name on Card: ${card.name}</h3>
     <p>Card Type: ${card.card_type}</p>
@@ -573,13 +626,24 @@ function createCards(card) {
     <p>Expiry Date: ${card.expiry}</p>
     <p>Autopay: ${card.autopay === '1' ? 'Enabled' : 'Disabled'}</p>
     <p>Since: ${card.since}</p>
+    <button class="remove-card-btn" data-card-number="${card.card_number}">Remove</button>
 `;
 
+
+   cardItem.addEventListener('click', function (event) {
+        if (event.target.classList.contains('remove-card-btn')) {
+            const cardNumber = event.target.getAttribute('data-card-number');
+            removeCard(cardNumber);
+        }
+    });
     return cardItem;
 }
     // Function to show the cards section and hide other sections
     function showCardsSection() {
         hideAllSections();
+
+        document.getElementById('newCardContainer').style.display = 'block';
+        document.getElementById('newCardForm').style.display ='none';
         document.getElementById('cardsContainer').style.display = 'block';
     }
 
@@ -734,6 +798,22 @@ function createSubscriptionCard(user_id, user_name, payment_status, subscription
     }
 
 
+// Function to remove a card
+function removeCard(cardNumber) {
+    // Assuming you have an API endpoint for deleting cards
+    fetch(`http://127.0.0.1:8111/api/cards/${cardNumber}`, {
+        method: 'DELETE',
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'success') {
+                fetchAndDisplayCards();
+            } else {
+                console.error('Failed to remove card:', data.status);
+            }
+        })
+        .catch(error => console.error('Error removing card:', error));
+}
 
     function hideAllSections(){
         document.getElementById('moviesContainer').style.display = 'none'
@@ -746,5 +826,8 @@ function createSubscriptionCard(user_id, user_name, payment_status, subscription
         document.getElementById('cardsContainer').style.display = 'none';
         document.getElementById('userReviewsContainer').style.display = 'none';
         document.getElementById('favouritesContainer').style.display = 'none'
+        document.getElementById('newCardContainer').style.display = 'none'
     }
+
+
 });

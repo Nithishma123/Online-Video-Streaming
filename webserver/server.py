@@ -311,47 +311,29 @@ def get_cards():
     cursor.close()
     return jsonify({'items': items, 'status': 'success'})
 
+
 @app.route('/api/subscription', methods=['GET'])
 def perform_subscription_query():
-    try:
-        # Execute the SQL query for subscriptions
-        cursor = g.conn.execute(
-            text(
-                "SELECT UI.user_id, UI.name AS username,"
-                "CASE "
-                "    WHEN MS.plan_expiry >= CURRENT_DATE AND ASB.expiry >= CURRENT_DATE THEN "
-                "        CASE "
-                "            WHEN PI.autopay = 1::BIT THEN 'Auto debit from Card' "
-                "            ELSE 'Payment Due (Autopay Disabled)' "
-                "        END "
-                "    ELSE 'Expired' "
-                "END AS payment_status, "
-                "COALESCE(ASB.annual_price, MS.monthly_price) AS subscription_price, "
-                "CASE "
-                "    WHEN MS.plan_expiry >= CURRENT_DATE AND PI.autopay = 1::BIT THEN 0  -- No payment due if autopay enabled "
-                "    WHEN MS.plan_expiry >= CURRENT_DATE THEN MS.monthly_price  -- Monthly subscription payment due "
-                "    WHEN ASB.expiry >= CURRENT_DATE AND PI.autopay = 1::BIT AND ASB.reward_points >= ASB.annual_price THEN 0  -- Deduct from reward points for annual subscription "
-                "    WHEN ASB.expiry >= CURRENT_DATE THEN ASB.annual_price - ASB.reward_points  -- Annual subscription payment due "
-                "    ELSE 0  -- No payment due for expired subscriptions "
-                "END AS payment_due "
-                "FROM USER_INFORMATION UI "
-                "LEFT JOIN MONTHLY_SUBSCRIBER MS ON UI.user_id = MS.user_id "
-                "LEFT JOIN ANNUAL_SUBSCRIBER ASB ON UI.user_id = ASB.user_id "
-                "INNER JOIN PAYS pay ON pay.user_id = UI.user_id "
-                "INNER JOIN PAYMENT_INFORMATION PI ON PI.card_number = pay.card_number "
-                "WHERE UI.user_id = :user_id"
-            ),
-            {'user_id': session.get('user_id')}
-        )
-        # Fetch the results
-        result = cursor.fetchall()
-        cursor.close()
-        # Convert the result to a list of dictionaries
-        items = [dict(row) for row in result]
-        return jsonify({'subscriptionResults': items, 'status': 'success'})
-    except Exception as e:
-        print("Error performing subscription query:", str(e))
-        return jsonify({'status': 'error'})
+    cursor = g.conn.execute(
+        text(
+            "SELECT UI.user_id, UI.name AS username,CASE WHEN MS.plan_expiry >= CURRENT_DATE AND ASB.expiry >= CURRENT_DATE THEN "
+            "CASE WHEN PI.autopay = 1::BIT THEN 'Auto debit from Card' ELSE 'Payment Due (Autopay Disabled)' END ELSE 'Expired' END AS payment_status, "
+            "COALESCE(ASB.annual_price, MS.monthly_price) AS subscription_price, CASE WHEN MS.plan_expiry >= CURRENT_DATE AND PI.autopay = 1::BIT THEN 0 "
+            "WHEN MS.plan_expiry >= CURRENT_DATE THEN MS.monthly_price "
+            "WHEN ASB.expiry >= CURRENT_DATE AND PI.autopay = 1::BIT AND ASB.reward_points >= ASB.annual_price THEN 0 "
+            "WHEN ASB.expiry >= CURRENT_DATE THEN ASB.annual_price - ASB.reward_points ELSE 0 END AS payment_due "
+            "FROM USER_INFORMATION UI "
+            "LEFT JOIN MONTHLY_SUBSCRIBER MS ON UI.user_id = MS.user_id "
+            "LEFT JOIN ANNUAL_SUBSCRIBER ASB ON UI.user_id = ASB.user_id "
+            "INNER JOIN PAYS pay ON pay.user_id = UI.user_id "
+            "INNER JOIN PAYMENT_INFORMATION PI ON PI.card_number = pay.card_number where UI.user_id = :user_id"
+        ), {'user_id': session.get('user_id')}
+    )
+    result = cursor.fetchall()
+    cursor.close()
+    items = [dict(row) for row in result]
+    return jsonify({'items': items, 'status': 'success'})
+
 
 
 @app.route('/api/user-reviews', methods=['GET'])
@@ -378,6 +360,38 @@ def get_favourites():
     items = [dict(row) for row in result]
     cursor.close()
     return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/new-card', methods=['POST'])
+def add_new_card():
+    payload = request.get_json()
+    cardName = payload.get('cardName')
+    cardType = payload.get('cardType')
+    cardNumber = payload.get('cardNumber')
+    expiryDate = payload.get('expiryDate')
+    autopay = payload.get('autopay')
+
+    res = g.conn.execute(text("select * from payment_information where card_number = :card_number"),
+                         {'card_number': cardNumber})
+
+    if res.rowcount == 0:
+        g.conn.execute(text("insert into payment_information values(:card_number, :name, :card_type, :expiry, "
+                            ":autopay)"),
+                                {'card_number': cardNumber, 'name': cardName, 'card_type': cardType, 'expiry':expiryDate, 'autopay': autopay})
+        g.conn.commit()
+
+    g.conn.execute(text("insert into pays values(:card_number, :user_id, CURRENT_DATE)"),
+                   {'card_number': cardNumber, 'user_id': session.get('user_id')})
+    g.conn.commit()
+    return jsonify({'message': 'success', 'status': 200}), 200
+
+@app.route('/api/cards/<card_number>', methods=['DELETE'])
+def delete_card(card_number):
+    g.conn.execute(text("DELETE FROM pays WHERE card_number = :card_number and user_id= :user_id"),
+                       {'card_number': card_number, 'user_id' : session.get('user_id')})
+    g.conn.commit()
+    return jsonify({'message': 'success', 'status': 200}), 200
+
 
 
 if __name__ == "__main__":

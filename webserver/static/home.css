@@ -105,19 +105,19 @@ main {
     gap: 16px;
 }
 
-.dropdown {
+.dropdown, .dropdown1 {
     position: relative;
     display: inline-block;
 }
 
-.dropbtn {
+.dropbtn, .dropbtn1 {
     color: white;
     padding: 10px;
     border: none;
     cursor: pointer;
 }
 
-.dropdown-content {
+.dropdown-content, .dropdown-content1 {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -139,6 +139,62 @@ main {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.dropdown-content1 a {
+    color: black;
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+}
+
+.dropdown-content1 a:hover {
+    background-color: #ddd;
+}
+
+.dropdown1:hover .dropdown-content1 {
+    display: block;
+}
+
+/* Style for the newCardContainer */
+#newCardContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#addCardButton {
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#newCardForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#newCardForm label {
+    margin-bottom: 5px;
+}
+
+#newCardForm input,
+#newCardForm select {
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#newCardForm button {
+    padding: 10px;
+    background-color: #2ecc71;
+    color: #fff;
+    border: none;
+    cursor: pointer;
 }
 
 

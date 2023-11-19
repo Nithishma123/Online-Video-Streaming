@@ -18,12 +18,17 @@
                 <li><a href="#" id="cast">Cast</a></li>
                 <li><a href="#" id="favourites">Favourites  </a></li>
                 <li><a href="#" id="subscriptions">Subscriptions</a></li>
+                <li class="dropdown1">
+                    <a href="#" class="dropbtn1">Payments</a>
+                    <div class="dropdown-content1" id="payments">
+                        <a href="#" id="viewCardsTab">Cards</a>
+                    </div>
+                </li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn">Account</a>
                     <div class="dropdown-content" id="account">
                         <a href="#" id="viewProfileTab">Profile</a>
-                        <a href="#" id="viewCardsTab">Cards</a>
-                        <a href="#" id="viewReviewedItemsTab">Reviews</>
+                        <a href="#" id="viewReviewedItemsTab">Reviews</a>
                     </div>
                 </li>
                 <li><a href="#" id="logout">Logout</a></li>
@@ -70,8 +75,38 @@
         </section>
         <section class="favourites-list" id="favouritesContainer">
             <div id="favouriteContainer" class="favourites-container"></div>
-        <section class="subscription-card-container" id="subscriptionCardContainer">
         </section>
+        <section class="subscription-card-container" id="subscriptionsCardContainer">
+            <div id="subscriptionContainer" class="subscription-container"></div>
+        </section>
+
+<div id="newCardContainer">
+    <button id="addCardButton">Add New Card</button>
+    <form id="newCardForm" style="display: none;">
+        <label for="cardName">Name on Card:</label>
+        <input type="text" id="cardName" name="cardName" required>
+        <label for="cardType">Card Type:</label>
+        <select id="cardType" name="cardType" required>
+            <option value="" selected disabled>Select Card Type</option>
+            <option value="MasterCard">MasterCard</option>
+            <option value="Visa">Visa</option>
+            <option value="Discover">Discover</option>
+        </select>
+        <label for="cardNumber">Card Number:</label>
+        <input type="text" id="cardNumber" name="cardNumber" required>
+        <label for="expiryDate">Expiry Date:</label>
+        <input type="date" id="expiryDate" name="expiryDate" required>
+        <label for="autopay">Autopay:</label>
+        <select id="autopay" name="autopay" required>
+            <option value="1">Enabled</option>
+            <option value="0">Disabled</option>
+        </select>
+        <button type="button" id="submitCardDetails">Submit</button>
+    </form>
+</div>
+
+
+
 
     </main>
 <script src="{{ url_for('static', filename='home.js') }}"></script>
