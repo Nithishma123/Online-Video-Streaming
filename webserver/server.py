@@ -267,6 +267,18 @@ def write_review():
     return jsonify({'message': 'Reviewed successfully', 'status': 200}), 200
 
 
+@app.route('/api/viewing', methods=['POST'])
+def get_update_viewed():
+    payload = request.get_json()
+    video_id = payload.get('videoId')
+
+    g.conn.execute(text("insert into viewed(user_id,video_id,timestamp) values(:user_id,"
+                                 ":video_id, GETDATE())"),
+                            {'video_id': video_id, 'user_id': session.get('user_id')})
+    g.conn.commit()
+    return jsonify({'message': 'Updated successfully', 'status': 200}), 200
+
+
 if __name__ == "__main__":
     import click
 
