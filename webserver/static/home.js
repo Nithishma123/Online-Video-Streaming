@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
 
         const readReviewsLink = movieCard.querySelector('.read-reviews');
-    const writeReviewLink = movieCard.querySelector('.write-review');
 
    readReviewsLink.addEventListener('click', function (event) {
             event.preventDefault();
