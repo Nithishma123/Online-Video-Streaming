@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchAndDisplayRecentlyWatched();
 
     function fetchAndDisplayMovies() {
-        fetch('http://192.168.1.30:8111/api/movies/2')
+        fetch('http://127.0.0.1:8111/api/movies/2')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             const videoId = this.getAttribute('data-movie-id');
 
-            fetch(`http://192.168.1.30:8111/api/reviews/${videoId}`)
+            fetch(`http://127.0.0.1:8111/api/reviews/${videoId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 
 function submitReview(videoId, reviewText, rating) {
-    const apiUrl = 'http://192.168.1.30:8111/api/write-reviews';
+    const apiUrl = 'http://127.0.0.1:8111/api/write-reviews';
 
     // Assuming your API requires a POST request with the review details
     fetch(apiUrl, {
@@ -162,7 +162,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayCategories() {
-        fetch('http://192.168.1.30:8111/api/categories')
+        fetch('http://127.0.0.1:8111/api/categories')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -202,7 +202,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayMoviesByCategory(categoryId) {
-        fetch(`http://192.168.1.30:8111/api/movies/${categoryId}`)
+        fetch(`http://127.0.0.1:8111/api/movies/${categoryId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -238,7 +238,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayGenres() {
-        fetch('http://192.168.1.30:8111/api/genres')
+        fetch('http://127.0.0.1:8111/api/genres')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -277,7 +277,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayMoviesByGenre(genreId) {
-        fetch(`http://192.168.1.30:8111/api/movies/genre/${genreId}`)
+        fetch(`http://127.0.0.1:8111/api/movies/genre/${genreId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -305,7 +305,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayCast() {
-        fetch('http://192.168.1.30:8111/api/cast')
+        fetch('http://127.0.0.1:8111/api/cast')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -344,7 +344,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayMoviesByCast(castId) {
-        fetch(`http://192.168.1.30:8111/api/movies/cast/${castId}`)
+        fetch(`http://127.0.0.1:8111/api/movies/cast/${castId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -373,7 +373,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayTrending() {
-        fetch('http://192.168.1.30:8111/api/trending')
+        fetch('http://127.0.0.1:8111/api/trending')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -387,7 +387,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayRecentlyWatched() {
-        fetch('http://192.168.1.30:8111/api/recently-watched')
+        fetch('http://127.0.0.1:8111/api/recently-watched')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -431,7 +431,7 @@ function submitReview(videoId, reviewText, rating) {
 
 
     function updateViewed() {
-        fetch('http://192.168.1.30:8111/api/viewing')
+        fetch('http://127.0.0.1:8111/api/viewing')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -446,7 +446,7 @@ function submitReview(videoId, reviewText, rating) {
 function updateViewed(){
 videoId=1
 
-fetch('http://192.168.1.30:8111/api/viewing', {
+fetch('http://127.0.0.1:8111/api/viewing', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        fetch('http://192.168.1.30:8111/api/login', {
+        fetch('http://127.0.0.1:8111/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const age = parseInt(document.getElementById('age').value, 10);
         const gender = document.getElementById('gender').value;
         const pass = document.getElementById('pass').value;
-        fetch('http://192.168.1.30:8111/api/signup', {
+        fetch('http://127.0.0.1:8111/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
