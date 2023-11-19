@@ -311,6 +311,48 @@ def get_cards():
     cursor.close()
     return jsonify({'items': items, 'status': 'success'})
 
+@app.route('/api/subscription', methods=['GET'])
+def perform_subscription_query():
+    try:
+        # Execute the SQL query for subscriptions
+        cursor = g.conn.execute(
+            text(
+                "SELECT UI.user_id, UI.name AS username,"
+                "CASE "
+                "    WHEN MS.plan_expiry >= CURRENT_DATE AND ASB.expiry >= CURRENT_DATE THEN "
+                "        CASE "
+                "            WHEN PI.autopay = 1::BIT THEN 'Auto debit from Card' "
+                "            ELSE 'Payment Due (Autopay Disabled)' "
+                "        END "
+                "    ELSE 'Expired' "
+                "END AS payment_status, "
+                "COALESCE(ASB.annual_price, MS.monthly_price) AS subscription_price, "
+                "CASE "
+                "    WHEN MS.plan_expiry >= CURRENT_DATE AND PI.autopay = 1::BIT THEN 0  -- No payment due if autopay enabled "
+                "    WHEN MS.plan_expiry >= CURRENT_DATE THEN MS.monthly_price  -- Monthly subscription payment due "
+                "    WHEN ASB.expiry >= CURRENT_DATE AND PI.autopay = 1::BIT AND ASB.reward_points >= ASB.annual_price THEN 0  -- Deduct from reward points for annual subscription "
+                "    WHEN ASB.expiry >= CURRENT_DATE THEN ASB.annual_price - ASB.reward_points  -- Annual subscription payment due "
+                "    ELSE 0  -- No payment due for expired subscriptions "
+                "END AS payment_due "
+                "FROM USER_INFORMATION UI "
+                "LEFT JOIN MONTHLY_SUBSCRIBER MS ON UI.user_id = MS.user_id "
+                "LEFT JOIN ANNUAL_SUBSCRIBER ASB ON UI.user_id = ASB.user_id "
+                "INNER JOIN PAYS pay ON pay.user_id = UI.user_id "
+                "INNER JOIN PAYMENT_INFORMATION PI ON PI.card_number = pay.card_number "
+                "WHERE UI.user_id = :user_id"
+            ),
+            {'user_id': session.get('user_id')}
+        )
+        # Fetch the results
+        result = cursor.fetchall()
+        cursor.close()
+        # Convert the result to a list of dictionaries
+        items = [dict(row) for row in result]
+        return jsonify({'subscriptionResults': items, 'status': 'success'})
+    except Exception as e:
+        print("Error performing subscription query:", str(e))
+        return jsonify({'status': 'error'})
+
 
 @app.route('/api/user-reviews', methods=['GET'])
 def get_user_reviews():

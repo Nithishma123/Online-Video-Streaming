@@ -630,6 +630,75 @@ function createUserReviews(review) {
         document.getElementById('userReviewsContainer').style.display = 'block';
     }
 
+function performSubscriptionQueryAndDisplay() {
+    // Fetch the subscription details using the SQL query
+    fetch('http://127.0.0.1:8111/api/subscription')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Clear existing card before displaying new one
+                clearSubscriptionCard();
+
+                // Display the subscription details as a card
+                if (data.subscriptionResults.length > 0) {
+                    const subscription = data.subscriptionResults[0];
+                    createSubscriptionCard(
+                        subscription.user_id,
+                        subscription.user_name,
+                        subscription.payment_status,
+                        subscription.subscription_price,
+                        subscription.payment_due
+                    );
+
+                    // Show the subscription card container
+                    showSubscriptionCard();
+                } else {
+                    console.error('No subscription data found.');
+                }
+            } else {
+                console.error('Failed to perform subscription query:', data.status);
+            }
+        })
+        .catch(error => console.error('Error performing subscription query:', error));
+}
+
+// Function to clear existing subscription card
+function clearSubscriptionCard() {
+    const subscriptionCardContainer = document.getElementById('subscriptionCardContainer');
+    subscriptionCardContainer.innerHTML = ''; // Clear the content
+}
+
+// Function to show the subscription card container
+function showSubscriptionCard() {
+    const subscriptionCardContainer = document.getElementById('subscriptionCardContainer');
+    hideAllSections();
+    subscriptionCardContainer.style.display = 'block';
+}
+
+function createSubscriptionCard(user_id, user_name, payment_status, subscription_price, payment_due) {
+    const cardContainer = document.getElementById('subscriptionCardContainer');
+
+    // Create a new card element
+    const cardElement = document.createElement('div');
+    cardElement.className = 'subscription-card';
+
+    cardElement.innerHTML = `
+        <h3>User ID: ${user_id}</h3>
+        <p>User Name: ${user_name}</p>
+        <p>Payment Status: ${payment_status}</p>
+        <p>Subscription Price: ${subscription_price}</p>
+        <p>Payment Due: ${payment_due}</p>
+    `;
+
+    // Append the card to the card container
+    cardContainer.appendChild(cardElement);
+}
+
+    // Add an event listener for the "subscriptions" tab
+    document.getElementById('subscriptions').addEventListener('click', function () {
+        performSubscriptionQueryAndDisplay();
+    });
+
 
         document.getElementById('favourites').addEventListener('click', function () {
 
