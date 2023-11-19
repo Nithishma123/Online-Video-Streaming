@@ -216,21 +216,14 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function showMoviesSection() {
-        document.getElementById('moviesContainer').style.display = 'block';
-        document.getElementById('trendingSection').style.display = 'none';
-        document.getElementById('recentlyWatchedSection').style.display = 'none';
-        document.getElementById('categoriesContainer').style.display = 'none';
-        document.getElementById('genresContainer').style.display = 'none';
-        document.getElementById('castContainer').style.display = 'none';
+
+    hideAllSections();
+            document.getElementById('moviesContainer').style.display = 'block';
     }
 
     function showCategoriesSection() {
+     hideAllSections();
         document.getElementById('categoriesContainer').style.display = 'block';
-        document.getElementById('trendingSection').style.display = 'none';
-        document.getElementById('recentlyWatchedSection').style.display = 'none';
-        document.getElementById('moviesContainer').style.display = 'none';
-        document.getElementById('genresContainer').style.display = 'none';
-        document.getElementById('castContainer').style.display = 'none';
     }
     //genres
     document.getElementById('genres').addEventListener('click', function () {
@@ -291,12 +284,8 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function showGenresSection() {
+        hideAllSections();
         document.getElementById('genresContainer').style.display = 'block';
-        document.getElementById('categoriesContainer').style.display = 'none';
-        document.getElementById('trendingSection').style.display = 'none';
-        document.getElementById('recentlyWatchedSection').style.display = 'none';
-        document.getElementById('moviesContainer').style.display = 'none';
-        document.getElementById('castContainer').style.display = 'none';
     }
 
     //cast
@@ -358,12 +347,8 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function showCastSection() {
+        hideAllSections();
         document.getElementById('castContainer').style.display = 'block';
-        document.getElementById('genresContainer').style.display = 'none';
-        document.getElementById('categoriesContainer').style.display = 'none';
-        document.getElementById('trendingSection').style.display = 'none';
-        document.getElementById('recentlyWatchedSection').style.display = 'none';
-        document.getElementById('moviesContainer').style.display = 'none';
     }
 
 
@@ -421,12 +406,9 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function showTrendingSection() {
+    hideAllSections();
     document.getElementById('trendingSection').style.display = 'block';
     document.getElementById('recentlyWatchedSection').style.display = 'block';
-    document.getElementById('castContainer').style.display = 'none';
-    document.getElementById('genresContainer').style.display = 'none';
-    document.getElementById('categoriesContainer').style.display = 'none';
-    document.getElementById('moviesContainer').style.display = 'none';
 }
 
 
@@ -536,13 +518,8 @@ function createProfile(profile) {
 // Function to show the profile section and hide other sections
 function showProfileSection() {
     // Assuming you have container elements for other sections
+    hideAllSections();
     document.getElementById('profilesContainer').style.display = 'block';
-    document.getElementById('trendingSection').style.display = 'none';
-    document.getElementById('recentlyWatchedSection').style.display = 'none';
-    document.getElementById('castContainer').style.display = 'none';
-    document.getElementById('genresContainer').style.display = 'none';
-    document.getElementById('categoriesContainer').style.display = 'none';
-    document.getElementById('moviesContainer').style.display = 'none';
 }
 
     // Add an event listener for the "View Cards" tab
@@ -586,9 +563,18 @@ function showProfileSection() {
 
     // Function to show the cards section and hide other sections
     function showCardsSection() {
-        // Assuming you have container elements for other sections
+        hideAllSections();
         document.getElementById('cardsContainer').style.display = 'block';
         document.getElementById('profileContainer').style.display = 'none';
-        // Add other sections as needed
+    }
+
+    function hideAllSections(){
+    document.getElementById('moviesContainer').style.display = 'none';
+        document.getElementById('trendingSection').style.display = 'none';
+        document.getElementById('recentlyWatchedSection').style.display = 'none';
+        document.getElementById('categoriesContainer').style.display = 'none';
+        document.getElementById('genresContainer').style.display = 'none';
+        document.getElementById('castContainer').style.display = 'none';
+        document.getElementById('profilesContainer').style.display = 'none';
     }
 });
