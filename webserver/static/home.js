@@ -39,10 +39,125 @@ document.addEventListener('DOMContentLoaded', function () {
             <h3>${movie.name}</h3>
             <p>${movie.description}</p>
             <p>Duration: ${movie.duration}</p>
-            <iframe src="${movie.video_link}" width="500px" height="300px"></iframe>`;
+            <a href="#" class="read-reviews" data-movie-id="${movie.video_id}">Reviews</a>
+            </br></br>
+            <iframe src="${movie.video_link}" width="500px" height="300px"></iframe>
+            `;
+
+        const readReviewsLink = movieCard.querySelector('.read-reviews');
+    const writeReviewLink = movieCard.querySelector('.write-review');
+
+   readReviewsLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            const videoId = this.getAttribute('data-movie-id');
+
+            fetch(`http://192.168.1.30:8111/api/reviews/${videoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Display reviews in a dialog box
+                        showReviewsDialog(data.items, videoId);
+                    } else {
+                        console.error('Failed to fetch reviews:', data.status);
+                    }
+                })
+                .catch(error => console.error('Error fetching reviews:', error));
+        });
+
 
         return movieCard;
     }
+
+   function showReviewsDialog(reviews, videoId) {
+    // Create a dialog box
+
+    const dialogBox = document.createElement('div');
+    dialogBox.classList.add('dialog-box');
+    const ratingLabel = document.createElement('label');
+    ratingLabel.textContent = '    Rating:';
+    const ratingInput = document.createElement('input');
+    ratingInput.type = 'range';
+    ratingInput.min = 1;
+    ratingInput.max = 10;
+
+
+    // Create a close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close';
+    closeButton.addEventListener('click', function () {
+        // Close the dialog box
+        dialogBox.remove();
+    });
+
+    // Create a textarea for adding a new review
+    const newReviewTextarea = document.createElement('textarea');
+    newReviewTextarea.placeholder = 'Write your review...';
+
+    // Create a button to submit the new review
+    const submitReviewButton = document.createElement('button');
+    submitReviewButton.textContent = 'Submit Review';
+    submitReviewButton.addEventListener('click', function () {
+        const newReviewText = newReviewTextarea.value;
+        const newRating = ratingInput.value;
+        submitReview(videoId, newReviewText,newRating);
+    });
+
+    // Append elements to the dialog box
+
+
+    // Display existing reviews
+    const reviewsContainer = document.createElement('div');
+    const reviewsItem = document.createElement('h2');
+    reviewsItem.textContent = "Review \t \t \t - Rating";
+    reviewsContainer.appendChild(reviewsItem);
+
+    reviews.forEach(review => {
+        const reviewItem = document.createElement('p');
+        reviewItem.textContent = review.comment_string+"  - "+review.rating;
+        reviewsContainer.appendChild(reviewItem);
+    });
+    dialogBox.appendChild(reviewsContainer);
+
+    // Display textarea and submit button for a new review
+    dialogBox.appendChild(newReviewTextarea);
+    dialogBox.appendChild(ratingLabel);
+    dialogBox.appendChild(ratingInput);
+    dialogBox.appendChild(submitReviewButton);
+    dialogBox.appendChild(closeButton);
+
+    // Append the dialog box to the body
+    document.body.appendChild(dialogBox);
+}
+
+function submitReview(videoId, reviewText, rating) {
+    const apiUrl = 'http://192.168.1.30:8111/api/write-reviews';
+
+    // Assuming your API requires a POST request with the review details
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            video_id: videoId,
+            comment_string: reviewText,
+            rating: rating,
+            // Add any other required parameters
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Optionally, you can update the UI or perform other actions on success
+            console.log('Review submitted successfully:', data);
+        } else {
+            console.error('Failed to submit review:', data.status);
+        }
+    })
+    .catch(error => console.error('Error submitting review:', error));
+}
+
+
 
     document.getElementById('categories').addEventListener('click', function () {
         fetchAndDisplayCategories();

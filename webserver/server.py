@@ -142,7 +142,6 @@ def get_all_movies(category_id):
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -152,7 +151,6 @@ def get_all_categories():
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -162,7 +160,6 @@ def get_all_genres():
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -172,7 +169,6 @@ def get_all_cast():
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -197,7 +193,6 @@ def get_movie_by_actor(actor_id):
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -212,7 +207,6 @@ def get_trending():
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -230,8 +224,36 @@ def get_recently_viewed():
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/reviews/<int:video_id>', methods=['GET'])
+def get_reviews(video_id):
+    cursor = g.conn.execute(text("select * from rates r inner join review re on re.review_id=r.review_id where "
+                                 "r.video_id = :video_id"),
+                            {'video_id': video_id})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/write-reviews', methods=['POST'])
+def write_review():
+    payload = request.get_json()
+    video_id = payload.get('video_id')
+    comment_string = payload.get('comment_string')
+    rating = payload.get('rating')
+
+    result = g.conn.execute(text("insert into review(comment_string,rating) values(:comment_string,"
+                                 ":rating) RETURNING review_id"),
+                            {'comment_string': comment_string, 'rating': rating})
+    g.conn.commit()
+    review_id = result.fetchone()[0]
+    g.conn.execute(text("insert into rates(video_id, user_id, review_id) values(:video_id, :user_id, :review_id)"),
+                   {'video_id': video_id, 'user_id': session.get('user_id'), 'review_id': review_id})
+    g.conn.commit()
+    return jsonify({'message': 'Reviewed successfully', 'status': 200}), 200
 
 
 if __name__ == "__main__":
