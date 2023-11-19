@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
             </br></br>
             <iframe src="${movie.video_link}" width="500px" height="300px"></iframe>
             `;
-
         const readReviewsLink = movieCard.querySelector('.read-reviews');
 
    readReviewsLink.addEventListener('click', function (event) {
@@ -429,4 +428,56 @@ function submitReview(videoId, reviewText, rating) {
     document.getElementById('categoriesContainer').style.display = 'none';
     document.getElementById('moviesContainer').style.display = 'none';
 }
+
+
+    function updateViewed() {
+        fetch('http://192.168.1.30:8111/api/viewing')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('successfully updated viewed')
+                } else {
+                    console.error('Failed to update:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching trending:', error));
+    }
+
+function updateViewed(){
+videoId=1
+
+fetch('http://192.168.1.30:8111/api/viewing', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({videoId})
+        })
+        .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Optionally, you can update the UI or perform other actions on success
+            console.log('Review submitted successfully:', data);
+        } else {
+            console.error('Failed to submit review:', data.status);
+        }
+    })
+    .catch(error => console.error('Error submitting review:', error));
+    };
+
+
+const message = document.getElementById("message");
+
+// main document must be focused in order for window blur to fire when the iframe is interacted with.
+// There's still an issue that if user interacts outside of the page and then click iframe first without clicking page, the following logic won't run. But since the OP is only concerned about first click this shouldn't be a problem.
+window.focus()
+
+window.addEventListener("blur", () => {
+  setTimeout(() => {
+    if (document.activeElement.tagName === "IFRAME") {
+      updateViewed()
+      console.log("clicked");
+    }
+  });
+}, { once: true });
 });
