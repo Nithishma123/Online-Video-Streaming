@@ -492,6 +492,7 @@ function createProfile(profile) {
     // Determine the subscription type based on the expiry status
     let subscriptionType;
     let memberExpiry;
+    let since;
     if (profile.expiry !== null) {
     subscriptionType = 'Annual Subscription';
         memberExpiry = profile.expiry
@@ -500,7 +501,13 @@ function createProfile(profile) {
         memberExpiry = profile.plan_expiry
     } else {
         subscriptionType = 'No Subscription';
-        memberExpiry = profile.plan_expiry
+        memberExpiry = 'N/A'
+    }
+
+    if(profile.since !==null){
+    since = profile.since;
+    }else{
+    since = 'N/A'
     }
 
     profileItem.innerHTML = `
@@ -509,7 +516,8 @@ function createProfile(profile) {
         <p>Gender: ${profile.gender}</p>
         <p>Phone Number: ${profile.phone_no}</p>
         <p>Subscription: ${subscriptionType}</p>
-        <p>Plan Expiry: ${memberExpiry}</p>`;
+        <p>Plan Expiry: ${memberExpiry}</p>
+        <p>Member Since: ${since}</p>`;
 
     // Add other profile information as needed
     return profileItem;
@@ -534,8 +542,7 @@ function showProfileSection() {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    displayCards(data.cards);
-                    // Show the cards section (adjust the function name accordingly)
+                    displayCards(data.items);
                     showCardsSection();
                 } else {
                     console.error('Failed to fetch cards:', data.status);
@@ -544,37 +551,44 @@ function showProfileSection() {
             .catch(error => console.error('Error fetching cards:', error));
     }
 
-    // Function to display cards information
     function displayCards(cards) {
-        // Assuming you have a container element for displaying cards information
-        const cardsContainer = document.getElementById('cardsContainer');
-
-        // Clear existing content
-        cardsContainer.innerHTML = '';
-
-        // Create and append elements based on your data structure
-        cards.forEach(card => {
-            const cardItem = document.createElement('div');
-            cardsContainer.appendChild(cardItem);
+    const cardContainer = document.getElementById('cardContainer');
+    cardContainer.innerHTML = '';
+    cards.forEach(card => {
+            const cardItem = createCards(card);
+            cardContainer.appendChild(cardItem);
         });
+}
 
-        // Add other card information as needed
-    }
+function createCards(card) {
+    const cardItem = document.createElement('div');
+    cardItem.classList.add('card-item');
 
+    cardItem.innerHTML = `
+    <h3>Name on Card: ${card.name}</h3>
+    <p>Card Type: ${card.card_type}</p>
+    <p>Card Number: ${card.card_number}</p>
+    <p>Expiry Date: ${card.expiry}</p>
+    <p>Autopay: ${card.autopay === '1' ? 'Enabled' : 'Disabled'}</p>
+    <p>Since: ${card.since}</p>
+`;
+
+    return cardItem;
+}
     // Function to show the cards section and hide other sections
     function showCardsSection() {
         hideAllSections();
         document.getElementById('cardsContainer').style.display = 'block';
-        document.getElementById('profileContainer').style.display = 'none';
     }
 
     function hideAllSections(){
-    document.getElementById('moviesContainer').style.display = 'none';
+        document.getElementById('moviesContainer').style.display = 'none';
         document.getElementById('trendingSection').style.display = 'none';
         document.getElementById('recentlyWatchedSection').style.display = 'none';
         document.getElementById('categoriesContainer').style.display = 'none';
         document.getElementById('genresContainer').style.display = 'none';
         document.getElementById('castContainer').style.display = 'none';
         document.getElementById('profilesContainer').style.display = 'none';
+        document.getElementById('cardsContainer').style.display = 'none';
     }
 });

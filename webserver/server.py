@@ -285,7 +285,8 @@ def get_update_viewed():
 def get_profile_information():
     cursor = g.conn.execute(text("select * from user_information u left join annual_subscriber a on a.user_id = "
                                  "u.user_id "
-                                 "left join monthly_subscriber m on m.user_id = u.user_id where "
+                                 "left join monthly_subscriber m on m.user_id = u.user_id left join pays p on "
+                                 "p.user_id = u.user_id where "
                                  "u.user_id = :user_id"),
                             {'user_id': session.get('user_id')})
     result = cursor.fetchall()
@@ -296,7 +297,7 @@ def get_profile_information():
 
 @app.route('/api/cards', methods=['GET'])
 def get_cards():
-    cursor = g.conn.execute(text("select * from payment_information"),
+    cursor = g.conn.execute(text("select * from payment_information pi inner join pays p on p.card_number = pi.card_number where p.user_id = :user_id"),
                             {'user_id': session.get('user_id')})
     result = cursor.fetchall()
     items = [dict(row) for row in result]
