@@ -73,7 +73,7 @@ main {
     font-weight: bold;
 }
 
-.movie-card, .category-item, .genre-item, .cast-item, .card-item, .userreview-item {
+.movie-card, .category-item, .genre-item, .cast-item, .card-item, .userreview-item, .subscription-item {
     border: 1px solid #ddd;
     margin: 10px;
     padding: 10px;

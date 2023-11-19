@@ -693,6 +693,11 @@ function createUserReviews(review) {
         hideAllSections();
         document.getElementById('userReviewsContainer').style.display = 'block';
     }
+    // Add an event listener for the "subscriptions" tab
+    document.getElementById('subscriptions').addEventListener('click', function () {
+        performSubscriptionQueryAndDisplay();
+    });
+
 
 function performSubscriptionQueryAndDisplay() {
     // Fetch the subscription details using the SQL query
@@ -700,68 +705,50 @@ function performSubscriptionQueryAndDisplay() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Clear existing card before displaying new one
-                clearSubscriptionCard();
+                displaySubscriptions(data.items)
+                showSubcriptionSection();
 
-                // Display the subscription details as a card
-                if (data.subscriptionResults.length > 0) {
-                    const subscription = data.subscriptionResults[0];
-                    createSubscriptionCard(
-                        subscription.user_id,
-                        subscription.user_name,
-                        subscription.payment_status,
-                        subscription.subscription_price,
-                        subscription.payment_due
-                    );
 
-                    // Show the subscription card container
-                    showSubscriptionCard();
                 } else {
                     console.error('No subscription data found.');
                 }
-            } else {
-                console.error('Failed to perform subscription query:', data.status);
-            }
+            })
+    };
+
+    function displaySubscriptions(subscriptions) {
+    const subscriptionsContainer = document.getElementById('subscriptionsContainer');
+    subscriptionsContainer.innerHTML = '';
+    subscriptions.forEach(subscription => {
+            const subscriptionItem = createSubscription(subscription);
+            subscriptionsContainer.appendChild(subscriptionItem);
         })
-        .catch(error => console.error('Error performing subscription query:', error));
+}
+
+function createSubscription(subscription) {
+    const subscriptionItem = document.createElement('div');
+    subscriptionItem.classList.add('subscription-item');
+
+    subscriptionItem.innerHTML = `
+    <h3>Subscription Status: ${subscription.plan_status}</h3>
+    <h4>Subscription Type: ${subscription.subscriber}</h4>
+    <p>Price: ${subscription.subscription_price}</p>
+    <p>Current plan activated on: ${subscription.since_date}</p>
+    <p>Next Billing Date: ${subscription.end_date}</p>
+    <p>Payment Status: ${subscription.payment_status}</p>
+    <p>Amount due: ${subscription.payment_due}</p>
+    <p>Paid via: ${subscription.card}</p>`;
+
+    return subscriptionItem;
 }
 
 // Function to clear existing subscription card
-function clearSubscriptionCard() {
-    const subscriptionCardContainer = document.getElementById('subscriptionCardContainer');
-    subscriptionCardContainer.innerHTML = ''; // Clear the content
-}
-
-// Function to show the subscription card container
-function showSubscriptionCard() {
-    const subscriptionCardContainer = document.getElementById('subscriptionCardContainer');
+function showSubcriptionSection() {
     hideAllSections();
-    subscriptionCardContainer.style.display = 'block';
+    document.getElementById('subscriptionsContainer').style.display = 'block'
 }
 
-function createSubscriptionCard(user_id, user_name, payment_status, subscription_price, payment_due) {
-    const cardContainer = document.getElementById('subscriptionCardContainer');
 
-    // Create a new card element
-    const cardElement = document.createElement('div');
-    cardElement.className = 'subscription-card';
 
-    cardElement.innerHTML = `
-        <h3>User ID: ${user_id}</h3>
-        <p>User Name: ${user_name}</p>
-        <p>Payment Status: ${payment_status}</p>
-        <p>Subscription Price: ${subscription_price}</p>
-        <p>Payment Due: ${payment_due}</p>
-    `;
-
-    // Append the card to the card container
-    cardContainer.appendChild(cardElement);
-}
-
-    // Add an event listener for the "subscriptions" tab
-    document.getElementById('subscriptions').addEventListener('click', function () {
-        performSubscriptionQueryAndDisplay();
-    });
 
 
         document.getElementById('favourites').addEventListener('click', function () {
@@ -825,8 +812,10 @@ function removeCard(cardNumber) {
         document.getElementById('profilesContainer').style.display = 'none';
         document.getElementById('cardsContainer').style.display = 'none';
         document.getElementById('userReviewsContainer').style.display = 'none';
-        document.getElementById('favouritesContainer').style.display = 'none'
-        document.getElementById('newCardContainer').style.display = 'none'
+        document.getElementById('favouritesContainer').style.display = 'none';
+        document.getElementById('newCardContainer').style.display = 'none';
+        document.getElementById('subscriptionsContainer').style.display = 'none'
+
     }
 
 
