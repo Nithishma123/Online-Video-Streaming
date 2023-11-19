@@ -297,12 +297,41 @@ def get_profile_information():
 
 @app.route('/api/cards', methods=['GET'])
 def get_cards():
-    cursor = g.conn.execute(text("select * from payment_information pi inner join pays p on p.card_number = pi.card_number where p.user_id = :user_id"),
+    cursor = g.conn.execute(text("select * from payment_information pi inner join pays p on p.card_number = "
+                                 "pi.card_number where p.user_id = :user_id"),
                             {'user_id': session.get('user_id')})
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
     return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/user-reviews', methods=['GET'])
+def get_user_reviews():
+    cursor = g.conn.execute(text("select * from rates r inner join review re on re.review_id = r.review_id inner join "
+                                 "user_information u on u.user_id = r.user_id "
+                                 "inner join video_item_belongsto v on v.video_id = r.video_id where u.user_id = "
+                                 ":user_id"),
+                            {'user_id': session.get('user_id')})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/favourites', methods=['GET'])
+def get_favourites():
+    cursor = g.conn.execute(text("select * from rates r inner join review re on re.review_id = r.review_id inner join "
+                                 "user_information u on u.user_id = r.user_id "
+                                 "inner join video_item_belongsto v on v.video_id = r.video_id where u.user_id = "
+                                 ":user_id and re.likes = 1::BIT"),
+                            {'user_id': session.get('user_id')})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    return jsonify({'items': items, 'status': 'success'})
+
+
 
 
 if __name__ == "__main__":

@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const newReviewText = newReviewTextarea.value;
         const newRating = ratingInput.value;
         submitReview(videoId, newReviewText,newRating);
+        dialogBox.remove();
     });
 
     // Append elements to the dialog box
@@ -581,6 +582,54 @@ function createCards(card) {
         document.getElementById('cardsContainer').style.display = 'block';
     }
 
+
+    document.getElementById('viewReviewedItemsTab').addEventListener('click', function () {
+    console.log('fetchAndDisplayUserReviews called');
+
+        fetchAndDisplayUserReviews();
+    });
+
+    function fetchAndDisplayUserReviews() {
+        fetch('http://127.0.0.1:8111/api/user-reviews')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayUserReviews(data.items);
+                    showUserReviewsSection();
+                } else {
+                    console.error('Failed to fetch reviews:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching reviews:', error));
+    }
+
+    function displayUserReviews(reviews) {
+    const userReviewContainer = document.getElementById('userReviewContainer');
+    userReviewContainer.innerHTML = '';
+    reviews.forEach(review => {
+            const reviewItem = createUserReviews(review);
+            userReviewContainer.appendChild(reviewItem);
+        });
+}
+
+function createUserReviews(review) {
+    const reviewItem = document.createElement('div');
+    reviewItem.classList.add('userreview-item');
+
+    reviewItem.innerHTML = `
+    <h3>Video: ${review.name}</h3>
+    <p>Comment: ${review.comment_string}</p>
+    <p>Rating: ${review.rating}</p>`;
+
+    return reviewItem;
+}
+    // Function to show the cards section and hide other sections
+    function showUserReviewsSection() {
+        hideAllSections();
+        document.getElementById('userReviewsContainer').style.display = 'block';
+    }
+
+
     function hideAllSections(){
         document.getElementById('moviesContainer').style.display = 'none';
         document.getElementById('trendingSection').style.display = 'none';
@@ -590,5 +639,7 @@ function createCards(card) {
         document.getElementById('castContainer').style.display = 'none';
         document.getElementById('profilesContainer').style.display = 'none';
         document.getElementById('cardsContainer').style.display = 'none';
+        document.getElementById('userReviewsContainer').style.display = 'none';
+        document.getElementById('favouritesContainer').style.display = 'none'
     }
 });
