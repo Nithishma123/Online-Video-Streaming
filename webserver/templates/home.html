@@ -17,7 +17,14 @@
                 <li><a href="#" id="genres">Genres</a></li>
                 <li><a href="#" id="cast">Cast</a></li>
                 <li><a href="#" id="subscriptions">Subscriptions</a></li>
-                <li><a href="#" id="account">Account</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Account</a>
+                    <div class="dropdown-content" id="account">
+                        <a href="#" id="viewProfileTab">Profile</a>
+                        <a href="#" id="viewCardsTab">Cards</a>
+                        <a href="#" id="viewReviewedItemsTab">Reviews</a>
+                    </div>
+                </li>
                 <li><a href="#" id="logout">Logout</a></li>
             </ul>
         </nav>
@@ -51,6 +58,10 @@
             <div id="cContainer" class="cast-container"></div>
         </section>
         <div id="dialog-container"></div>
+        <section class="profile-list" id="profilesContainer">
+            <div id="profileContainer" class="profile-container"></div>
+        </section>
+
     </main>
 <script src="{{ url_for('static', filename='home.js') }}"></script>
 </body>

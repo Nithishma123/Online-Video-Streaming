@@ -471,8 +471,124 @@ document.getElementById('logout').addEventListener('click', function () {
         logoutUser();
     });
 
-    function logoutUser() {
+function logoutUser() {
         localStorage.removeItem('authToken');
         window.location.href = '/';
+    }
+document.getElementById('viewProfileTab').addEventListener('click', function () {
+        fetchAndDisplayProfile();
+    });
+
+    // Function to fetch and display profile information
+    function fetchAndDisplayProfile() {
+        // Assuming you have an API endpoint for fetching profile information
+        fetch('http://127.0.0.1:8111/api/profile')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayProfile(data.items[0]);
+                    // Show the profile section (adjust the function name accordingly)
+                    showProfileSection();
+                } else {
+                    console.error('Failed to fetch profile:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching profile:', error));
+    }
+
+
+function displayProfile(profile) {
+    const profileContainer = document.getElementById('profileContainer');
+    profileContainer.innerHTML = '';
+    profileContainer.appendChild(createProfile(profile));
+}
+
+function createProfile(profile) {
+    const profileItem = document.createElement('div');
+    profileItem.classList.add('profile-item');
+
+    // Determine the subscription type based on the expiry status
+    let subscriptionType;
+    let memberExpiry;
+    if (profile.expiry !== null) {
+    subscriptionType = 'Annual Subscription';
+        memberExpiry = profile.expiry
+    } else if (profile.plan_expiry !== null) {
+        subscriptionType = 'Monthly Subscription';
+        memberExpiry = profile.plan_expiry
+    } else {
+        subscriptionType = 'No Subscription';
+        memberExpiry = profile.plan_expiry
+    }
+
+    profileItem.innerHTML = `
+        <h3>Name: ${profile.name}</h3>
+        <p>Age: ${profile.age}</p>
+        <p>Gender: ${profile.gender}</p>
+        <p>Phone Number: ${profile.phone_no}</p>
+        <p>Subscription: ${subscriptionType}</p>
+        <p>Plan Expiry: ${memberExpiry}</p>`;
+
+    // Add other profile information as needed
+    return profileItem;
+}
+
+// Function to show the profile section and hide other sections
+function showProfileSection() {
+    // Assuming you have container elements for other sections
+    document.getElementById('profilesContainer').style.display = 'block';
+    document.getElementById('trendingSection').style.display = 'none';
+    document.getElementById('recentlyWatchedSection').style.display = 'none';
+    document.getElementById('castContainer').style.display = 'none';
+    document.getElementById('genresContainer').style.display = 'none';
+    document.getElementById('categoriesContainer').style.display = 'none';
+    document.getElementById('moviesContainer').style.display = 'none';
+}
+
+    // Add an event listener for the "View Cards" tab
+    document.getElementById('viewCardsTab').addEventListener('click', function () {
+        fetchAndDisplayCards();
+    });
+
+    // Function to fetch and display cards information
+    function fetchAndDisplayCards() {
+        // Assuming you have an API endpoint for fetching cards information
+        fetch('http://127.0.0.1:8111/api/cards')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayCards(data.cards);
+                    // Show the cards section (adjust the function name accordingly)
+                    showCardsSection();
+                } else {
+                    console.error('Failed to fetch cards:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching cards:', error));
+    }
+
+    // Function to display cards information
+    function displayCards(cards) {
+        // Assuming you have a container element for displaying cards information
+        const cardsContainer = document.getElementById('cardsContainer');
+
+        // Clear existing content
+        cardsContainer.innerHTML = '';
+
+        // Create and append elements based on your data structure
+        cards.forEach(card => {
+            const cardItem = document.createElement('div');
+            cardsContainer.appendChild(cardItem);
+        });
+
+        // Add other card information as needed
+    }
+
+    // Function to show the cards section and hide other sections
+    function showCardsSection() {
+        // Assuming you have container elements for other sections
+        document.getElementById('cardsContainer').style.display = 'block';
+        document.getElementById('profileContainer').style.display = 'none';
+        // Add other sections as needed
     }
 });

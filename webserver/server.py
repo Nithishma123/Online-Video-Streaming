@@ -281,6 +281,29 @@ def get_update_viewed():
     return jsonify({'message': 'success', 'status': 200}), 200
 
 
+@app.route('/api/profile', methods=['GET'])
+def get_profile_information():
+    cursor = g.conn.execute(text("select * from user_information u left join annual_subscriber a on a.user_id = "
+                                 "u.user_id "
+                                 "left join monthly_subscriber m on m.user_id = u.user_id where "
+                                 "u.user_id = :user_id"),
+                            {'user_id': session.get('user_id')})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/cards', methods=['GET'])
+def get_cards():
+    cursor = g.conn.execute(text("select * from payment_information"),
+                            {'user_id': session.get('user_id')})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    return jsonify({'items': items, 'status': 'success'})
+
+
 if __name__ == "__main__":
     import click
 
