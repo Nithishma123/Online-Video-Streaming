@@ -162,11 +162,49 @@ def get_all_genres():
     logging.debug(items)
     return jsonify({'items': items, 'status': 'success'})
 
-@app.route('/api/movies/<int:genre_id>', methods=['GET'])
+
+@app.route('/api/cast', methods=['GET'])
+def get_all_cast():
+    cursor = g.conn.execute(text("select * from actor"))
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/movies/genre/<int:genre_id>', methods=['GET'])
 def get_movie_by_genre(genre_id):
     cursor = g.conn.execute(text("select * from linked_to l inner join video_item_belongsto v on v.video_id = "
                                  "l.video_id where l.genre_id=:genre_id"),
                             {'genre_id': genre_id})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+
+@app.route('/api/movies/cast/<int:actor_id>', methods=['GET'])
+def get_movie_by_actor(actor_id):
+    cursor = g.conn.execute(text("select * from actor a inner join starred_by s on a.actor_id = s.actor_id inner join "
+                                 "video_item_belongsto v on v.video_id = "
+                                 "s.video_id where s.actor_id = :actor_id"),
+                            {'actor_id': actor_id})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    logging.debug(items)
+    return jsonify({'items': items, 'status': 'success'})
+
+@app.route('/api/trending', methods=['GET'])
+def get_trending():
+    cursor = g.conn.execute(text("select v.video_id, v.name, v.description, v.duration, v.video_link, v.category_id, "
+                                 "AVG(rev.rating) as rating from rates r inner join review rev on r.review_id = "
+                                 "rev.review_id "
+                                 "inner join video_item_belongsto v on r.video_id = v.video_id group by v.video_id, "
+                                 "v.name, v.description, v.duration, v.video_link, v.category_id order by rating desc "
+                                 "limit 10"))
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
