@@ -34,14 +34,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function createMovieCard(movie) {
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie-card');
-
+        const videoId = movie.video_id;
         movieCard.innerHTML = `
             <h3>${movie.name}</h3>
             <p>${movie.description}</p>
             <p>Duration: ${movie.duration}</p>
-            <a href="#" class="read-reviews" data-movie-id="${movie.video_id}">Reviews</a>
+            <a href="#" class="read-reviews" data-movie-id="${videoId}">Reviews</a>
             </br></br>
-            <iframe src="${movie.video_link}" width="500px" height="300px"></iframe>
+            <iframe src="${movie.video_link}" width="500px" height="300px" data-video-id="${videoId}"></iframe>
             `;
         const readReviewsLink = movieCard.querySelector('.read-reviews');
 
@@ -430,21 +430,7 @@ function submitReview(videoId, reviewText, rating) {
 }
 
 
-    function updateViewed() {
-        fetch('http://127.0.0.1:8111/api/viewing')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    console.log('successfully updated viewed')
-                } else {
-                    console.error('Failed to update:', data.status);
-                }
-            })
-            .catch(error => console.error('Error fetching trending:', error));
-    }
-
-function updateViewed(){
-videoId=1
+function updateViewed(videoId){
 
 fetch('http://127.0.0.1:8111/api/viewing', {
             method: 'POST',
@@ -472,7 +458,9 @@ window.focus()
 window.addEventListener("blur", () => {
   setTimeout(() => {
     if (document.activeElement.tagName === "IFRAME") {
-      updateViewed()
+
+      const videoId = document.activeElement.getAttribute('data-video-id');
+      updateViewed(videoId)
       console.log("clicked");
     }
   });

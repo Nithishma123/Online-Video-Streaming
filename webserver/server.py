@@ -137,13 +137,14 @@ def home_screen():
 
 @app.route('/api/movies/<int:category_id>', methods=['GET'])
 def get_all_movies(category_id):
-    cursor = g.conn.execute(text("select v.name, v.description, v.duration, v.video_link,v.video_id, avg(re.rating) as rating "
-                                 "from video_item_belongsto v "
-                                 "left join rates r on r.video_id = v.video_id left join review re on re.review_id = "
-                                 "r.review_id where v.category_id=:category_id "
-                                 "group by re.rating, v.name, v.description, v.duration, v.video_link, v.video_id "
-                                 "order by avg(re.rating) desc NULLS last"),
-                            {'category_id': category_id})
+    cursor = g.conn.execute(
+        text("select v.name, v.description, v.duration, v.video_link,v.video_id, avg(re.rating) as rating "
+             "from video_item_belongsto v "
+             "left join rates r on r.video_id = v.video_id left join review re on re.review_id = "
+             "r.review_id where v.category_id=:category_id "
+             "group by re.rating, v.name, v.description, v.duration, v.video_link, v.video_id "
+             "order by avg(re.rating) desc NULLS last"),
+        {'category_id': category_id})
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
@@ -179,15 +180,16 @@ def get_all_cast():
 
 @app.route('/api/movies/genre/<int:genre_id>', methods=['GET'])
 def get_movie_by_genre(genre_id):
-    cursor = g.conn.execute(text("select v.video_id, v.name, v.description, v.duration, v.video_link, avg(re.rating) as rating "
-                                 "from linked_to l "
-                                 "inner join video_item_belongsto v on v.video_id = l.video_id " 
-                                 "left join rates r on r.video_id = v.video_id "
-                                 "left join review re on re.review_id = r.review_id "
-                                 "where genre_id = :genre_id "
-                                 "group by v.video_id, re.rating, v.name, v.description, v.duration, v.video_link "
-                                 "order by avg(re.rating) desc NULLS last"),
-                            {'genre_id': genre_id})
+    cursor = g.conn.execute(
+        text("select v.video_id, v.name, v.description, v.duration, v.video_link, avg(re.rating) as rating "
+             "from linked_to l "
+             "inner join video_item_belongsto v on v.video_id = l.video_id "
+             "left join rates r on r.video_id = v.video_id "
+             "left join review re on re.review_id = r.review_id "
+             "where genre_id = :genre_id "
+             "group by v.video_id, re.rating, v.name, v.description, v.duration, v.video_link "
+             "order by avg(re.rating) desc NULLS last"),
+        {'genre_id': genre_id})
     result = cursor.fetchall()
     items = [dict(row) for row in result]
     cursor.close()
@@ -272,8 +274,9 @@ def get_update_viewed():
     payload = request.get_json()
     video_id = payload.get('videoId')
 
-    g.conn.execute(text("insert into viewed(user_id,video_id,completed, timestamp) values(:user_id,:video_id, 0::BIT, CURRENT_DATE)"),
-                            {'video_id': video_id, 'user_id': session.get('user_id')})
+    g.conn.execute(text("insert into viewed(user_id,video_id,completed, timestamp) values(:user_id,:video_id, 0::BIT, "
+                        "CURRENT_DATE) ON CONFLICT (user_id, video_id) DO UPDATE SET timestamp = CURRENT_DATE"),
+                   {'video_id': video_id, 'user_id': session.get('user_id')})
     g.conn.commit()
     return jsonify({'message': 'success', 'status': 200}), 200
 
