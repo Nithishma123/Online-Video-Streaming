@@ -258,15 +258,21 @@ def write_review():
     comment_string = payload.get('comment_string')
     rating = payload.get('rating')
 
-    result = g.conn.execute(text("insert into review(comment_string,rating) values(:comment_string,"
-                                 ":rating) RETURNING review_id"),
-                            {'comment_string': comment_string, 'rating': rating})
-    g.conn.commit()
-    review_id = result.fetchone()[0]
-    g.conn.execute(text("insert into rates(video_id, user_id, review_id) values(:video_id, :user_id, :review_id)"),
-                   {'video_id': video_id, 'user_id': session.get('user_id'), 'review_id': review_id})
-    g.conn.commit()
-    return jsonify({'message': 'Reviewed successfully', 'status': 200}), 200
+    res = g.conn.execute(text("select * from rates where video_id = :video_id and user_id = :user_id"),
+                         {'video_id': video_id, 'user_id': session.get('user_id')})
+
+    if not res:
+        result = g.conn.execute(text("insert into review(comment_string,rating) values(:comment_string,"
+                                     ":rating) RETURNING review_id"),
+                                {'comment_string': comment_string, 'rating': rating})
+        g.conn.commit()
+        review_id = result.fetchone()[0]
+        g.conn.execute(text("insert into rates(video_id, user_id, review_id) values(:video_id, :user_id, :review_id)"),
+                       {'video_id': video_id, 'user_id': session.get('user_id'), 'review_id': review_id})
+        g.conn.commit()
+        return jsonify({'message': 'success', 'status': 200}), 200
+    else:
+        return jsonify({'message': 'Already reviewed for the video, cannot review again!', 'status': 400}), 400
 
 
 @app.route('/api/viewing', methods=['POST'])
@@ -330,8 +336,6 @@ def get_favourites():
     items = [dict(row) for row in result]
     cursor.close()
     return jsonify({'items': items, 'status': 'success'})
-
-
 
 
 if __name__ == "__main__":

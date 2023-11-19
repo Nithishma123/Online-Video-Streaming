@@ -146,10 +146,11 @@ function submitReview(videoId, reviewText, rating) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success') {
+        if (data.message === 'success') {
             // Optionally, you can update the UI or perform other actions on success
             console.log('Review submitted successfully:', data);
         } else {
+            alert(data.message);
             console.error('Failed to submit review:', data.status);
         }
     })
@@ -630,8 +631,43 @@ function createUserReviews(review) {
     }
 
 
+        document.getElementById('favourites').addEventListener('click', function () {
+
+        fetchAndDisplayFavourites();
+    });
+
+    function fetchAndDisplayFavourites() {
+        fetch('http://127.0.0.1:8111/api/favourites')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayFavourites(data.items);
+                    showFavouritesSection();
+                } else {
+                    console.error('Failed to fetch reviews:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching reviews:', error));
+    }
+
+    function displayFavourites(movies) {
+    const favouritesContainer = document.getElementById('favouritesContainer');
+    favouritesContainer.innerHTML = '';
+    movies.forEach(movie => {
+            const favItem = createMovieCard(movie);
+            favouritesContainer.appendChild(favItem);
+        });
+}
+
+    function showFavouritesSection() {
+        hideAllSections();
+        document.getElementById('favouritesContainer').style.display = 'block';
+    }
+
+
+
     function hideAllSections(){
-        document.getElementById('moviesContainer').style.display = 'none';
+        document.getElementById('moviesContainer').style.display = 'none'
         document.getElementById('trendingSection').style.display = 'none';
         document.getElementById('recentlyWatchedSection').style.display = 'none';
         document.getElementById('categoriesContainer').style.display = 'none';
