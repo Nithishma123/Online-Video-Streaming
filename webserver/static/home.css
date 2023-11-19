@@ -96,3 +96,11 @@ main {
 .dialog-box button {
     margin-top: 10px;
 }
+
+.trending-container,
+.watched-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 16px;
+}

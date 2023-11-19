@@ -467,9 +467,6 @@ fetch('http://192.168.1.30:8111/api/viewing', {
 
 
 const message = document.getElementById("message");
-
-// main document must be focused in order for window blur to fire when the iframe is interacted with.
-// There's still an issue that if user interacts outside of the page and then click iframe first without clicking page, the following logic won't run. But since the OP is only concerned about first click this shouldn't be a problem.
 window.focus()
 
 window.addEventListener("blur", () => {
@@ -480,4 +477,14 @@ window.addEventListener("blur", () => {
     }
   });
 }, { once: true });
+
+
+document.getElementById('logout').addEventListener('click', function () {
+        logoutUser();
+    });
+
+    function logoutUser() {
+        localStorage.removeItem('authToken');
+        window.location.href = '/';
+    }
 });
