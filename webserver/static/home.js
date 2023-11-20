@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
     let isSubscriber = 0;
-    let Subscriptionprice = 0;
+    let subscriptionPrice = 0;
     let subscriptionType = 'N/A';
     fetchAndDisplayTrending();
     fetchAndDisplayRecentlyWatched();
     checkIsSubscriber();
+
+    document.getElementById('movies').addEventListener('click', function () {
+        fetchAndDisplayMovies();
+    });
 
     function fetchAndDisplayMovies() {
         fetch('/api/movies/2')
@@ -20,36 +24,16 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error fetching movies:', error));
     }
 
-    document.getElementById('movies').addEventListener('click', function () {
-        fetchAndDisplayMovies();
-    });
-
     function displayMovies(movies) {
         const movieContainer = document.getElementById('movieContainer');
         movieContainer.innerHTML = '';
-
         movies.forEach(movie => {
             const movieCard = createMovieCard(movie);
             movieContainer.appendChild(movieCard);
         });
     }
 
-
-    function fetchAndDisplayMovies() {
-        fetch('/api/movies/2')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    displayMovies(data.items);
-                    showMoviesSection();
-                } else {
-                    console.error('Failed to fetch movies:', data.status);
-                }
-            })
-            .catch(error => console.error('Error fetching movies:', error));
-    }
-
-function checkIsSubscriber() {
+    function checkIsSubscriber() {
     return fetch('/api/subscriber')
         .then(response => response.json())
         .then(data => {
@@ -60,7 +44,7 @@ function checkIsSubscriber() {
             console.error('Error fetching subscription:', error);
             return 0; // Return a default value in case of an error
         });
-}
+    }
 
     function createMovieCard(movie) {
         const movieCard = document.createElement('div');
@@ -152,7 +136,6 @@ function checkIsSubscriber() {
    }
 
    function showReviewsDialog(reviews, videoId) {
-    // Create a dialog box
 
     const dialogBox = document.createElement('div');
     dialogBox.classList.add('dialog-box');
@@ -162,21 +145,13 @@ function checkIsSubscriber() {
     ratingInput.type = 'range';
     ratingInput.min = 1;
     ratingInput.max = 10;
-
-
-    // Create a close button
     const closeButton = document.createElement('button');
     closeButton.textContent = 'Close';
     closeButton.addEventListener('click', function () {
-        // Close the dialog box
         dialogBox.remove();
     });
-
-    // Create a textarea for adding a new review
     const newReviewTextarea = document.createElement('textarea');
     newReviewTextarea.placeholder = 'Write your review...';
-
-    // Create a button to submit the new review
     const submitReviewButton = document.createElement('button');
     submitReviewButton.textContent = 'Submit Review';
     submitReviewButton.addEventListener('click', function () {
@@ -185,11 +160,6 @@ function checkIsSubscriber() {
         submitReview(videoId, newReviewText,newRating);
         dialogBox.remove();
     });
-
-    // Append elements to the dialog box
-
-
-    // Display existing reviews
     const reviewsContainer = document.createElement('div');
     const reviewsItem = document.createElement('h2');
     reviewsItem.textContent = "Review \t \t \t - Rating";
@@ -201,22 +171,16 @@ function checkIsSubscriber() {
         reviewsContainer.appendChild(reviewItem);
     });
     dialogBox.appendChild(reviewsContainer);
-
-    // Display textarea and submit button for a new review
     dialogBox.appendChild(newReviewTextarea);
     dialogBox.appendChild(ratingLabel);
     dialogBox.appendChild(ratingInput);
     dialogBox.appendChild(submitReviewButton);
     dialogBox.appendChild(closeButton);
-
-    // Append the dialog box to the body
     document.body.appendChild(dialogBox);
 }
 
 function submitReview(videoId, reviewText, rating) {
     const apiUrl = '/api/write-reviews';
-
-    // Assuming your API requires a POST request with the review details
     fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -231,7 +195,6 @@ function submitReview(videoId, reviewText, rating) {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'success') {
-            // Optionally, you can update the UI or perform other actions on success
             console.log('Review submitted successfully:', data);
         } else {
             alert(data.message);
@@ -243,9 +206,8 @@ function submitReview(videoId, reviewText, rating) {
 
 
 
-    document.getElementById('categories').addEventListener('click', function () {
-        fetchAndDisplayCategories();
-    });
+document.getElementById('categories').addEventListener('click', function () {
+        fetchAndDisplayCategories();});
 
     function fetchAndDisplayCategories() {
         fetch('/api/categories')
@@ -264,7 +226,6 @@ function submitReview(videoId, reviewText, rating) {
     function displayCategories(categories) {
         const categoriesContainer = document.getElementById('categoriesContainer');
         categoriesContainer.innerHTML = '';
-
         categories.forEach(category => {
             const categoryItem = createCategoryItem(category);
             categoriesContainer.appendChild(categoryItem);
@@ -274,16 +235,13 @@ function submitReview(videoId, reviewText, rating) {
     function createCategoryItem(category) {
         const categoryItem = document.createElement('div');
         categoryItem.classList.add('category-item');
-
         categoryItem.innerHTML = `
             <h3>${category.category_name}</h3>
         `;
-
         categoryItem.addEventListener('click', function () {
             console.log(`Clicked on category: ${category.category_name}, ID: ${category.category_id}`);
             fetchAndDisplayMoviesByCategory(category.category_id);
         });
-
         return categoryItem;
     }
 
@@ -302,16 +260,15 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function showMoviesSection() {
-
     hideAllSections();
-            document.getElementById('moviesContainer').style.display = 'block';
+    document.getElementById('moviesContainer').style.display = 'block';
     }
 
     function showCategoriesSection() {
      hideAllSections();
-        document.getElementById('categoriesContainer').style.display = 'block';
+     document.getElementById('categoriesContainer').style.display = 'block';
     }
-    //genres
+
     document.getElementById('genres').addEventListener('click', function () {
         fetchAndDisplayGenres();
     });
@@ -327,13 +284,12 @@ function submitReview(videoId, reviewText, rating) {
                     console.error('Failed to fetch genres:', data.status);
                 }
             })
-            .catch(error => console.error('Error fetching genres:', error));
+        .catch(error => console.error('Error fetching genres:', error));
     }
 
     function displayGenres(genres) {
         const genresContainer = document.getElementById('genresContainer');
         genresContainer.innerHTML = '';
-
         genres.forEach(genre => {
             const genreItem = createGenreItem(genre);
             genresContainer.appendChild(genreItem);
@@ -343,15 +299,12 @@ function submitReview(videoId, reviewText, rating) {
     function createGenreItem(genre) {
         const genreItem = document.createElement('div');
         genreItem.classList.add('genre-item');
-
         genreItem.innerHTML = `
             <h3>${genre.name}</h3>
         `;
-
         genreItem.addEventListener('click', function () {
             fetchAndDisplayMoviesByGenre(genre.genre_id);
         });
-
         return genreItem;
     }
 
@@ -374,7 +327,6 @@ function submitReview(videoId, reviewText, rating) {
         document.getElementById('genresContainer').style.display = 'block';
     }
 
-    //cast
     document.getElementById('cast').addEventListener('click', function () {
         fetchAndDisplayCast();
     });
@@ -396,7 +348,6 @@ function submitReview(videoId, reviewText, rating) {
     function displayCast(casts) {
         const castContainer = document.getElementById('castContainer');
         castContainer.innerHTML = '';
-
         casts.forEach(cast => {
             const castItem = createCastItem(cast);
             castContainer.appendChild(castItem);
@@ -406,15 +357,10 @@ function submitReview(videoId, reviewText, rating) {
     function createCastItem(cast) {
         const castItem = document.createElement('div');
         castItem.classList.add('cast-item');
-
-        castItem.innerHTML = `
-            <h3>${cast.actor_name}</h3>
-        `;
-
+        castItem.innerHTML = `<h3>${cast.actor_name}</h3>`;
         castItem.addEventListener('click', function () {
             fetchAndDisplayMoviesByCast(cast.actor_id);
         });
-
         return castItem;
     }
 
@@ -436,7 +382,6 @@ function submitReview(videoId, reviewText, rating) {
         hideAllSections();
         document.getElementById('castContainer').style.display = 'block';
     }
-
 
     document.getElementById('home').addEventListener('click', function () {
         fetchAndDisplayTrending();
@@ -474,7 +419,6 @@ function submitReview(videoId, reviewText, rating) {
     function displayTrending(movies) {
         const trendingContainer = document.getElementById('trendingContainer');
         trendingContainer.innerHTML = '';
-
         movies.forEach(movie => {
             const movieCard = createMovieCard(movie);
             trendingContainer.appendChild(movieCard);
@@ -484,7 +428,6 @@ function submitReview(videoId, reviewText, rating) {
     function displayRecentlyWatched(movies) {
         const watchedContainer = document.getElementById('watchedContainer');
         watchedContainer.innerHTML = '';
-
         movies.forEach(movie => {
             const movieCard = createMovieCard(movie);
             watchedContainer.appendChild(movieCard);
@@ -492,15 +435,14 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function showTrendingSection() {
-    hideAllSections();
-    document.getElementById('trendingSection').style.display = 'block';
-    document.getElementById('recentlyWatchedSection').style.display = 'block';
-}
+       hideAllSections();
+       document.getElementById('trendingSection').style.display = 'block';
+       document.getElementById('recentlyWatchedSection').style.display = 'block';
+    }
 
 
-function updateViewed(videoId){
-
-fetch('/api/viewing', {
+    function updateViewed(videoId){
+       fetch('/api/viewing', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -508,98 +450,89 @@ fetch('/api/viewing', {
             body: JSON.stringify({videoId})
         })
         .then(response => response.json())
-    .then(data => {
+        .then(data => {
         if (data.status === 'success') {
-            // Optionally, you can update the UI or perform other actions on success
-            console.log('Review submitted successfully:', data);
+            console.log('Success:', data);
         } else {
-            console.error('Failed to submit review:', data.status);
-        }
-    })
-    .catch(error => console.error('Error submitting review:', error));
+            console.error('Failed :', data.status);
+        }}).catch(error => console.error('Error:', error));
     };
 
+    const message = document.getElementById("message");
+    window.focus()
 
-const message = document.getElementById("message");
-window.focus()
-
-window.addEventListener("blur", () => {
-  setTimeout(() => {
+    window.addEventListener("blur", () => {
+    setTimeout(() => {
     if (document.activeElement.tagName === "IFRAME") {
-
       const videoId = document.activeElement.getAttribute('data-video-id');
       updateViewed(videoId)
       console.log("clicked");
-    }
-  });
-}, { once: true });
+    }});}, { once: true });
 
 
-document.getElementById('logout').addEventListener('click', function () {
+    document.getElementById('logout').addEventListener('click', function () {
         logoutUser();
     });
 
-function logoutUser() {
+    function logoutUser() {
         isSubscriber = 0;
-        Subscriptionprice =0;
+        subscriptionPrice =0;
         subscriptionType = 'N/A'
         localStorage.removeItem('authToken');
         window.location.href = '/';
     }
-document.getElementById('viewProfileTab').addEventListener('click', function () {
-        fetchAndDisplayProfile();
+
+    document.getElementById('viewProfileTab').addEventListener('click', function () {
+       fetchAndDisplayProfile();
     });
 
-    // Function to fetch and display profile information
     function fetchAndDisplayProfile() {
-        // Assuming you have an API endpoint for fetching profile information
         fetch('/api/profile')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     displayProfile(data.items[0]);
-                    // Show the profile section (adjust the function name accordingly)
                     showProfileSection();
                 } else {
-                    console.error('Failed to fetch profile:', data.status);
+                   console.error('Failed to fetch profile:', data.status);
                 }
             })
             .catch(error => console.error('Error fetching profile:', error));
     }
 
+    function displayProfile(profile) {
+        const profileContainer = document.getElementById('profileContainer');
+        profileContainer.innerHTML = '';
+        profileContainer.appendChild(createProfile(profile));
+    }
 
-function displayProfile(profile) {
-    const profileContainer = document.getElementById('profileContainer');
-    profileContainer.innerHTML = '';
-    profileContainer.appendChild(createProfile(profile));
-}
-
-function createProfile(profile) {
-    const profileItem = document.createElement('div');
-    profileItem.classList.add('profile-item');
-
-    // Determine the subscription type based on the expiry status
-    let subscriptionType;
-    let memberExpiry;
-    let since;
-    if (profile.expiry !== null) {
-    subscriptionType = 'Annual Subscription';
+    function createProfile(profile) {
+        const profileItem = document.createElement('div');
+        profileItem.classList.add('profile-item');
+        let subscriptionType;
+        let memberExpiry;
+        let since;
+        if (profile.expiry !== null) {
+        subscriptionType = 'Annual Subscription';
         memberExpiry = profile.expiry
-    } else if (profile.plan_expiry !== null) {
+        }
+        else if (profile.plan_expiry !== null) {
         subscriptionType = 'Monthly Subscription';
         memberExpiry = profile.plan_expiry
-    } else {
+        }
+        else {
         subscriptionType = 'No Subscription';
         memberExpiry = 'N/A'
-    }
+        }
 
-    if(profile.since !==null){
-    since = profile.since;
-    }else{
-    since = 'N/A'
-    }
+        if(profile.since !==null){
+        since = profile.since;
+        }
+        else{
+        since = 'N/A'
+        }
 
-    profileItem.innerHTML = `
+        profileItem.innerHTML = `
         <h3>Name: ${profile.name}</h3>
         <p>Age: ${profile.age}</p>
         <p>Gender: ${profile.gender}</p>
@@ -608,25 +541,19 @@ function createProfile(profile) {
         <p>Plan Expiry: ${memberExpiry}</p>
         <p>Member Since: ${since}</p>`;
 
-    // Add other profile information as needed
     return profileItem;
 }
 
-// Function to show the profile section and hide other sections
-function showProfileSection() {
-    // Assuming you have container elements for other sections
-    hideAllSections();
-    document.getElementById('profilesContainer').style.display = 'block';
-}
+    function showProfileSection() {
+        hideAllSections();
+        document.getElementById('profilesContainer').style.display = 'block';
+    }
 
-    // Add an event listener for the "View Cards" tab
     document.getElementById('viewCardsTab').addEventListener('click', function () {
         fetchAndDisplayCards();
     });
 
-    // Function to fetch and display cards information
     function fetchAndDisplayCards() {
-        // Assuming you have an API endpoint for fetching cards information
         fetch('/api/cards')
             .then(response => response.json())
             .then(data => {
@@ -648,32 +575,29 @@ function showProfileSection() {
             cardContainer.appendChild(cardItem);
         });
     return cards;
-}
+    }
 
-document.getElementById('newCardContainer').addEventListener('click', function (event) {
+    document.getElementById('newCardContainer').addEventListener('click', function (event) {
         handleAddNewCard();
     });
 
-function handleAddNewCard() {
-        // Hide other sections
+    function handleAddNewCard() {
         hideAllSections();
         document.getElementById('newCardContainer').style.display = 'block'
         document.getElementById('addCardButton').style.display = 'none';
         document.getElementById('newCardForm').style.display = 'block';
     }
 
-document.getElementById('submitCardDetails').addEventListener('click', function (event) {
+    document.getElementById('submitCardDetails').addEventListener('click', function (event) {
         submitCardDetails();
     });
-function submitCardDetails() {
-        // Get form data
+
+    function submitCardDetails() {
         var cardName = document.getElementById('cardName').value;
         var cardType = document.getElementById('cardType').value;
         var cardNumber = document.getElementById('cardNumber').value;
         var expiryDate = document.getElementById('expiryDate').value;
         var autopay = document.getElementById('autopay').value;
-
-        // Create an object with the form data
         var formData = {
             cardName: cardName,
             cardType: cardType,
@@ -682,7 +606,6 @@ function submitCardDetails() {
             autopay: autopay
         };
 
-        // Make API call using Fetch
         fetch('/api/new-card', {
             method: 'POST',
             headers: {
@@ -704,7 +627,7 @@ function submitCardDetails() {
         });
     }
 
-function createCards(card) {
+    function createCards(card) {
     const cardItem = document.createElement('div');
     cardItem.classList.add('card-item');
     cardItem.innerHTML = `
@@ -714,11 +637,9 @@ function createCards(card) {
     <p>Expiry Date: ${card.expiry}</p>
     <p>Autopay: ${card.autopay === '1' ? 'Enabled' : 'Disabled'}</p>
     <p>Since: ${card.since}</p>
-    <button class="remove-card-btn" data-card-number="${card.card_number}">Remove</button>
-`;
+    <button class="remove-card-btn" data-card-number="${card.card_number}">Remove</button>`;
 
-
-   cardItem.addEventListener('click', function (event) {
+    cardItem.addEventListener('click', function (event) {
         if (event.target.classList.contains('remove-card-btn')) {
             const cardNumber = event.target.getAttribute('data-card-number');
             removeCard(cardNumber);
@@ -726,24 +647,21 @@ function createCards(card) {
     });
 
     cardItem.addEventListener('click', function () {
-        // Ask for payment confirmation
         const confirmed = confirm('Do you want to proceed with the payment for this card?');
         if (confirmed) {
-            initiatePayment(card.card_number, Subscriptionprice);
-            provideSubscription(subscriptionType, Subscriptionprice);
+            initiatePayment(card.card_number, subscriptionPrice);
+            provideSubscription(subscriptionType, subscriptionPrice);
             checkIsSubscriber();
-
         setTimeout(() => {
             alert('Payment successful. Continue watching!');
         }, 1000);
         }
     });
     return cardItem;
-}
-    // Function to show the cards section and hide other sections
+    }
+
     function showCardsSection() {
         hideAllSections();
-
         document.getElementById('newCardContainer').style.display = 'block';
         document.getElementById('newCardForm').style.display ='none';
         document.getElementById('cardsContainer').style.display = 'block';
@@ -751,9 +669,7 @@ function createCards(card) {
 
 
     document.getElementById('viewReviewedItemsTab').addEventListener('click', function () {
-    console.log('fetchAndDisplayUserReviews called');
-
-        fetchAndDisplayUserReviews();
+       fetchAndDisplayUserReviews();
     });
 
     function fetchAndDisplayUserReviews() {
@@ -777,40 +693,34 @@ function createCards(card) {
             const reviewItem = createUserReviews(review);
             userReviewContainer.appendChild(reviewItem);
         });
-}
+    }
 
-function createUserReviews(review) {
-    const reviewItem = document.createElement('div');
-    reviewItem.classList.add('userreview-item');
+    function createUserReviews(review) {
+       const reviewItem = document.createElement('div');
+       reviewItem.classList.add('userreview-item');
+       reviewItem.innerHTML = `<h3>Video: ${review.name}</h3>
+       <p>Comment: ${review.comment_string}</p>
+       <p>Rating: ${review.rating}</p>`;
+       return reviewItem;
+    }
 
-    reviewItem.innerHTML = `
-    <h3>Video: ${review.name}</h3>
-    <p>Comment: ${review.comment_string}</p>
-    <p>Rating: ${review.rating}</p>`;
-
-    return reviewItem;
-}
-    // Function to show the cards section and hide other sections
     function showUserReviewsSection() {
         hideAllSections();
         document.getElementById('userReviewsContainer').style.display = 'block';
     }
-    // Add an event listener for the "subscriptions" tab
+
     document.getElementById('viewSubscriptionTab').addEventListener('click', function () {
         performSubscriptionQueryAndDisplay();
     });
 
 
-function performSubscriptionQueryAndDisplay() {
-    // Fetch the subscription details using the SQL query
+    function performSubscriptionQueryAndDisplay() {
     fetch('/api/subscription')
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
                 displaySubscriptions(data.items)
                 showSubcriptionSection();
-
-
                 } else {
                     console.error('No subscription data found.');
                 }
@@ -824,12 +734,11 @@ function performSubscriptionQueryAndDisplay() {
             const subscriptionItem = createSubscription(subscription);
             subscriptionsContainer.appendChild(subscriptionItem);
         })
-}
+    }
 
-function createSubscription(subscription) {
+    function createSubscription(subscription) {
     const subscriptionItem = document.createElement('div');
     subscriptionItem.classList.add('subscription-item');
-
     subscriptionItem.innerHTML = `
     <h3>Subscription Status: ${subscription.plan_status}</h3>
     <h4>Subscription Type: ${subscription.subscriber}</h4>
@@ -839,23 +748,17 @@ function createSubscription(subscription) {
     <p>Payment Status: ${subscription.payment_status}</p>
     <p>Amount due: ${subscription.payment_due}</p>
     <p>Paid via: ${subscription.card}</p>`;
-
     return subscriptionItem;
-}
+    }
 
-// Function to clear existing subscription card
-function showSubcriptionSection() {
+
+    function showSubcriptionSection() {
     hideAllSections();
     document.getElementById('subscriptionsContainer').style.display = 'block'
-}
+    }
 
-
-
-
-
-        document.getElementById('favourites').addEventListener('click', function () {
-
-        fetchAndDisplayFavourites();
+    document.getElementById('favourites').addEventListener('click', function () {
+      fetchAndDisplayFavourites();
     });
 
     function fetchAndDisplayFavourites() {
@@ -866,10 +769,10 @@ function showSubcriptionSection() {
                     displayFavourites(data.items);
                     showFavouritesSection();
                 } else {
-                    console.error('Failed to fetch reviews:', data.status);
+                    console.error('Failed to fetch favourites:', data.status);
                 }
             })
-            .catch(error => console.error('Error fetching reviews:', error));
+            .catch(error => console.error('Error fetching favourites:', error));
     }
 
     function displayFavourites(movies) {
@@ -879,7 +782,7 @@ function showSubcriptionSection() {
             const favItem = createMovieCard(movie);
             favouritesContainer.appendChild(favItem);
         });
-}
+    }
 
     function showFavouritesSection() {
         hideAllSections();
@@ -887,29 +790,24 @@ function showSubcriptionSection() {
     }
 
 
-// Function to remove a card
-function removeCard(cardNumber) {
-    // Assuming you have an API endpoint for deleting cards
+    function removeCard(cardNumber) {
     fetch(`/api/cards/${cardNumber}`, {
         method: 'DELETE',
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === 'success') {
-                fetchAndDisplayCards();
-            } else {
-                console.error('Failed to remove card:', data.status);
-            }
-        })
-        .catch(error => console.error('Error removing card:', error));
-}
+    .then(response => response.json())
+    .then(data => {
+    if (data.message === 'success') {
+        fetchAndDisplayCards();
+    }
+    else {
+        console.error('Failed to remove card:', data.status);
+    }
+    }).catch(error => console.error('Error removing card:', error));
+    }
 
-function showPrices() {
-        // Get the selected plan and duration values
+    function showPrices() {
         var selectedPlan = document.getElementById('subscriptionPlan').value;
         var selectedDuration = document.getElementById('subscriptionDuration').value;
-
-        // Check if both plan and duration are selected
         if (selectedPlan && selectedDuration) {
             displayPrices(selectedPlan, selectedDuration);
             document.getElementById('priceDisplay').style.display = 'block';
@@ -946,10 +844,9 @@ function showPrices() {
         }
 
         document.getElementById('priceDisplay').innerHTML = 'Price: $' + price.toFixed(2);
-        Subscriptionprice = price;
+        subscriptionPrice = price;
         subscriptionType = duration;
         return price;
-
     }
 
     document.getElementById('showPrices').addEventListener('click', function () {
@@ -986,15 +883,13 @@ function showPrices() {
                     displayMovies(data.items);
                     showMoviesSection();
                 } else {
-                    console.error('Failed to fetch movies:', data.status);
+                    console.error('Failed to fetch recommendations:', data.status);
                 }
             })
-            .catch(error => console.error('Error fetching movies:', error));
+            .catch(error => console.error('Error fetching recommendations:', error));
     }
 
     function provideSubscription(type, price) {
-
-    // Assuming your API requires a POST request with the review details
     fetch('/api/user-subscription', {
         method: 'POST',
         headers: {
@@ -1015,7 +910,7 @@ function showPrices() {
         }
     })
     .catch(error => console.error('Error submitting review:', error));
-}
+    }
 
     function hideAllSections(){
         document.getElementById('moviesContainer').style.display = 'none'
@@ -1033,6 +928,4 @@ function showPrices() {
         document.getElementById('ManageSubscriptionContainer').style.display = 'none';
         document.getElementById('priceDisplay').style.display = 'none';
     }
-
-
 });
