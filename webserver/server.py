@@ -491,8 +491,19 @@ def perform_subscription_query():
     )
     result = cursor.fetchall()
     cursor.close()
-    items = [dict(row) for row in result]
-
+    items = [
+        {
+            'plan_status': row[4],
+            'subscriber': row[11],
+            'subscription_price': row[6],
+            'since_date': row[8],
+            'end_date': row[9],
+            'payment_status': row[5],
+            'payment_due': row[7],
+            'card': row[10]
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
