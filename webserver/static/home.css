@@ -156,7 +156,6 @@ main {
     display: block;
 }
 
-/* Style for the newCardContainer */
 #newCardContainer {
     text-align: center;
     margin-top: 20px;
@@ -196,7 +195,6 @@ main {
     border: none;
     cursor: pointer;
 }
-
 
 .profile-item {
     text-align: center;

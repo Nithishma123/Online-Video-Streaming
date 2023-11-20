@@ -86,65 +86,55 @@
         <section class="subscription-container" id="subscriptionsContainer">
             <div id="subscriptionContainer" class="subscription-container"></div>
         </section>
-
-<div id="newCardContainer">
-    <button id="addCardButton">Add New Card</button>
-    <form id="newCardForm" style="display: none;">
-        <label for="cardName">Name on Card:</label>
-        <input type="text" id="cardName" name="cardName" required>
-        <label for="cardType">Card Type:</label>
-        <select id="cardType" name="cardType" required>
-            <option value="" selected disabled>Select Card Type</option>
-            <option value="MasterCard">MasterCard</option>
-            <option value="Visa">Visa</option>
-            <option value="Discover">Discover</option>
-        </select>
-        <label for="cardNumber">Card Number:</label>
-        <input type="text" id="cardNumber" name="cardNumber" required>
-        <label for="expiryDate">Expiry Date:</label>
-        <input type="date" id="expiryDate" name="expiryDate" required>
-        <label for="autopay">Autopay:</label>
-        <select id="autopay" name="autopay" required>
-            <option value="1">Enabled</option>
-            <option value="0">Disabled</option>
-        </select>
-        <button type="button" id="submitCardDetails">Submit</button>
-    </form>
-</div>
-
+        <div id="newCardContainer">
+            <button id="addCardButton">Add New Card</button>
+            <form id="newCardForm" style="display: none;">
+                <label for="cardName">Name on Card:</label>
+                <input type="text" id="cardName" name="cardName" required>
+                <label for="cardType">Card Type:</label>
+                <select id="cardType" name="cardType" required>
+                    <option value="" selected disabled>Select Card Type</option>
+                    <option value="MasterCard">MasterCard</option>
+                    <option value="Visa">Visa</option>
+                    <option value="Discover">Discover</option>
+                </select>
+                <label for="cardNumber">Card Number:</label>
+                <input type="text" id="cardNumber" name="cardNumber" required>
+                <label for="expiryDate">Expiry Date:</label>
+                <input type="date" id="expiryDate" name="expiryDate" required>
+                <label for="autopay">Autopay:</label>
+                <select id="autopay" name="autopay" required>
+                    <option value="1">Enabled</option>
+                    <option value="0">Disabled</option>
+                </select>
+                <button type="button" id="submitCardDetails">Submit</button>
+            </form>
+        </div>
         <div id="ManageSubscriptionContainer">
-
-
-    <div id="plan">
-        <h1>Choose Your Subscription Plan</h1>
-        <label for="subscriptionPlan">Select Plan:</label>
-        <select id="subscriptionPlan">
-            <option value="" selected disabled>Select Plan</option>
-            <option value="basic">Basic</option>
-            <option value="standard">Standard</option>
-            <option value="premium">Premium</option>
-        </select>
-    </div>
-
-
-
-    <div id="duration">
-        <h1>Choose Subscription Duration</h1>
-        <label for="subscriptionDuration">Select Duration:</label>
-        <select id="subscriptionDuration">
-            <option value="" selected disabled>Select duration</option>
-            <option value="Monthly">Monthly</option>
-            <option value="Annual">Annual</option>
-        </select>
-    </div>
+            <div id="plan">
+                <h1>Choose Your Subscription Plan</h1>
+                <label for="subscriptionPlan">Select Plan:</label>
+                <select id="subscriptionPlan">
+                    <option value="" selected disabled>Select Plan</option>
+                    <option value="basic">Basic</option>
+                    <option value="standard">Standard</option>
+                    <option value="premium">Premium</option>
+                </select>
+            </div>
+            <div id="duration">
+                <h1>Choose Subscription Duration</h1>
+                <label for="subscriptionDuration">Select Duration:</label>
+                <select id="subscriptionDuration">
+                    <option value="" selected disabled>Select duration</option>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Annual">Annual</option>
+                </select>
+            </div>
             <button type="button" id="showPrices">Show</button>
-
-        </br></br>
-        <div id="priceDisplay"></div>
+            </br></br>
+            <div id="priceDisplay"></div>
             <button type="button" id="proceedToPayment">Proceed to payment</button>
-    </div>
-
-
+        </div>
     </main>
 <script src="{{ url_for('static', filename='home.js') }}"></script>
 </body>
