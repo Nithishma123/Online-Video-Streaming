@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     let isSubscriber = 0;
+    let Subscriptionprice = 0;
+    let subscriptionType = 'N/A';
     fetchAndDisplayTrending();
     fetchAndDisplayRecentlyWatched();
     checkIsSubscriber();
@@ -52,7 +54,6 @@ function checkIsSubscriber() {
         .then(response => response.json())
         .then(data => {
             isSubscriber = data.items;
-            console.log('sub-'+isSubscriber)
             return isSubscriber;
         })
         .catch(error => {
@@ -540,6 +541,8 @@ document.getElementById('logout').addEventListener('click', function () {
 
 function logoutUser() {
         isSubscriber = 0;
+        Subscriptionprice =0;
+        subscriptionType = 'N/A'
         localStorage.removeItem('authToken');
         window.location.href = '/';
     }
@@ -644,6 +647,7 @@ function showProfileSection() {
             const cardItem = createCards(card);
             cardContainer.appendChild(cardItem);
         });
+    return cards;
 }
 
 document.getElementById('newCardContainer').addEventListener('click', function (event) {
@@ -718,6 +722,20 @@ function createCards(card) {
         if (event.target.classList.contains('remove-card-btn')) {
             const cardNumber = event.target.getAttribute('data-card-number');
             removeCard(cardNumber);
+        }
+    });
+
+    cardItem.addEventListener('click', function () {
+        // Ask for payment confirmation
+        const confirmed = confirm('Do you want to proceed with the payment for this card?');
+        if (confirmed) {
+            initiatePayment(card.card_number, Subscriptionprice);
+            provideSubscription(subscriptionType, Subscriptionprice);
+            checkIsSubscriber();
+
+        setTimeout(() => {
+            alert('Payment successful. Continue watching!');
+        }, 1000);
         }
     });
     return cardItem;
@@ -928,7 +946,9 @@ function showPrices() {
         }
 
         document.getElementById('priceDisplay').innerHTML = 'Price: $' + price.toFixed(2);
-        return price
+        Subscriptionprice = price;
+        subscriptionType = duration;
+        return price;
 
     }
 
@@ -972,6 +992,30 @@ function showPrices() {
             .catch(error => console.error('Error fetching movies:', error));
     }
 
+    function provideSubscription(type, price) {
+
+    // Assuming your API requires a POST request with the review details
+    fetch('http://127.0.0.1:8111/api/user-subscription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: type,
+            price: price
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'success') {
+            console.log('Subscribed', data);
+        } else {
+            alert(data.message);
+            console.error('Failed to submit review:', data.status);
+        }
+    })
+    .catch(error => console.error('Error submitting review:', error));
+}
 
     function hideAllSections(){
         document.getElementById('moviesContainer').style.display = 'none'

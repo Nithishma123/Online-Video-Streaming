@@ -316,6 +316,25 @@ def get_update_viewed():
     return jsonify({'message': 'success', 'status': 200}), 200
 
 
+@app.route('/api/user-subscription', methods=['POST'])
+def subscribeUser():
+    payload = request.get_json()
+    subtype = payload.get('type')
+    price = payload.get('price')
+    if subtype == "Annual":
+        g.conn.execute(text("insert into annual_subscriber(user_id,annual_price,expiry, reward_points) values("
+                            ":user_id,:price, NOW() + INTERVAL '365 days', 100)"),
+                   {'price': price, 'user_id': session.get('user_id')})
+        g.conn.commit()
+    else:
+        g.conn.execute(text("insert into monthly_subscriber(user_id,monthly_price,plan_expiry) values("
+                            ":user_id,:price, NOW() + INTERVAL '30 days')"),
+                       {'price': price, 'user_id': session.get('user_id')})
+        g.conn.commit()
+    session['is_subscriber'] = 1
+    return jsonify({'message': 'success', 'status': 200}), 200
+
+
 @app.route('/api/profile', methods=['GET'])
 def get_profile_information():
     cursor = g.conn.execute(text("select * from user_information u left join annual_subscriber a on a.user_id = "
