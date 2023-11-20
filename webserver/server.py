@@ -248,7 +248,18 @@ def get_trending():
                                  "limit 10"))
     result = cursor.fetchall()
     cursor.close()
-    items = [dict(row) for row in result]
+    items = [
+        {
+            'video_id': row[0],
+            'name': row[1].strip(),  # Remove extra spaces from the name
+            'description': row[2].strip(),  # Remove extra spaces from the description
+            'duration': row[3].strip(),  # Remove extra spaces from the duration
+            'video_link': row[4].strip(),  # Remove extra spaces from the video link
+            'category_id': row[5],
+            'rating': float(row[6]) if row[6] is not None else None  # Convert rating to float, handle None
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
