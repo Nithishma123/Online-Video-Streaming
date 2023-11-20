@@ -325,8 +325,18 @@ def get_recently_viewed():
                                  "WHERE vw.completed = 0::BIT and ui.user_id = :user_id ORDER BY vw.timestamp DESC "
                                  "LIMIT 10;"), {'user_id': session.get('user_id')})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'video_id': row[2],
+            'name': row[3].strip(),  # Remove extra spaces from the name
+            'description': row[4].strip(),  # Remove extra spaces from the description
+            'duration': row[5].strip(),  # Remove extra spaces from the duration
+            'video_link': row[6].strip(),  # Remove extra spaces from the video link
+            'category_id': row[7],
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
