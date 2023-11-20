@@ -1,16 +1,15 @@
-        // Show only login form initially
+document.getElementById('signupForm').style.display = 'none';
+
+
+document.getElementById('toggleSignup').addEventListener('click', function () {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+});
+
+document.getElementById('toggleLogin').addEventListener('click', function () {
+        document.getElementById('loginForm').style.display = 'block';
         document.getElementById('signupForm').style.display = 'none';
-
-        // Toggle between login and signup forms
-        document.getElementById('toggleSignup').addEventListener('click', function () {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('signupForm').style.display = 'block';
-        });
-
-        document.getElementById('toggleLogin').addEventListener('click', function () {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('signupForm').style.display = 'none';
-        });
+});
 
 
 document.addEventListener('DOMContentLoaded', function () {
