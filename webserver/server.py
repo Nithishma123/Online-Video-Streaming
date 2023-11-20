@@ -626,8 +626,18 @@ def get_recommendations():
                                  "having avg(rev.rating) > 9 "
                                  "limit 10"), {'user_id': session.get('user_id')})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'name': row[0].strip(),
+            'description': row[1].strip(),
+            'duration': row[2].strip(),
+            'video_link': row[3],
+            'video_id': row[4],
+            'rating': row[5],
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
