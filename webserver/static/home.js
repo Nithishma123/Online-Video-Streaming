@@ -694,7 +694,7 @@ function createUserReviews(review) {
         document.getElementById('userReviewsContainer').style.display = 'block';
     }
     // Add an event listener for the "subscriptions" tab
-    document.getElementById('subscriptions').addEventListener('click', function () {
+    document.getElementById('viewSubscriptionTab').addEventListener('click', function () {
         performSubscriptionQueryAndDisplay();
     });
 
@@ -802,6 +802,95 @@ function removeCard(cardNumber) {
         .catch(error => console.error('Error removing card:', error));
 }
 
+function showPrices() {
+        // Get the selected plan and duration values
+        var selectedPlan = document.getElementById('subscriptionPlan').value;
+        var selectedDuration = document.getElementById('subscriptionDuration').value;
+
+        // Check if both plan and duration are selected
+        if (selectedPlan && selectedDuration) {
+            price = displayPrices(selectedPlan, selectedDuration);
+            document.getElementById('plan').style.display = 'none';
+            document.getElementById('duration').style.display = 'none';
+            document.getElementById('showPrices').style.display = 'none';
+            document.getElementById('priceDisplay').style.display = 'block';
+            fetchAndDisplayCards();
+            var cards = document.getElementsByClassName('card-container');
+            for (var i = 0; i < cards.length; i++) {
+            cards[i].addEventListener('click', function () {
+
+                initiatePayment(event.target.getAttribute('data-card-number'), price);
+            });
+        }
+        } else {
+            alert('Please select both plan and duration before showing prices.');
+        }
+    }
+
+    function initiatePayment(cardId, price) {
+    alert('Initiating payment for card with number ' + cardId+ ' for $'+price);
+    }
+
+    function displayPrices(plan, duration) {
+    let price = 0;
+
+        if(plan === 'basic' && duration === 'Monthly'){
+               price = 10;
+        }
+        else if(plan === 'basic' && duration === 'Annual'){
+               price = 100;
+        }
+        else if(plan === 'standard' && duration === 'Monthly'){
+               price = 15;
+        }
+        else if(plan === 'standard' && duration === 'Annual'){
+               price = 150;
+        }
+        else if(plan === 'premium' && duration === 'Monthly'){
+               price = 25;
+        }
+        else if(plan === 'premium' && duration === 'Annual'){
+               price = 250;
+        }
+
+        document.getElementById('priceDisplay').innerHTML = 'Price: $' + price.toFixed(2);
+        return price
+
+    }
+
+    document.getElementById('showPrices').addEventListener('click', showPrices);
+
+
+    document.getElementById('manageSubscriptionTab').addEventListener('click', function () {
+
+        displayPlans();
+    });
+
+
+    function displayPlans() {
+       hideAllSections();
+       document.getElementById('ManageSubscriptionContainer').style.display = 'block';
+    }
+
+    document.getElementById('recommendations').addEventListener('click', function () {
+        fetchAndDisplayRecommendations();
+    });
+
+    function fetchAndDisplayRecommendations() {
+        fetch('http://127.0.0.1:8111/api/recommendations')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayMovies(data.items);
+                    showMoviesSection();
+                } else {
+                    console.error('Failed to fetch movies:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching movies:', error));
+    }
+
+
     function hideAllSections(){
         document.getElementById('moviesContainer').style.display = 'none'
         document.getElementById('trendingSection').style.display = 'none';
@@ -814,7 +903,9 @@ function removeCard(cardNumber) {
         document.getElementById('userReviewsContainer').style.display = 'none';
         document.getElementById('favouritesContainer').style.display = 'none';
         document.getElementById('newCardContainer').style.display = 'none';
-        document.getElementById('subscriptionsContainer').style.display = 'none'
+        document.getElementById('subscriptionsContainer').style.display = 'none';
+        document.getElementById('ManageSubscriptionContainer').style.display = 'none';
+        document.getElementById('priceDisplay').style.display = 'none';
 
     }
 

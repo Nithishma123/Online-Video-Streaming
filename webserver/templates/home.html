@@ -12,12 +12,19 @@
         <nav>
             <ul>
                 <li><a href="#" id ="home">Home</a></li>
+                <li><a href="#" id="recommendations">Recommendations  </a></li>
                 <li><a href="#" id="movies">Movies</a></li>
                 <li><a href="#" id="categories">Categories</a></li>
                 <li><a href="#" id="genres">Genres</a></li>
                 <li><a href="#" id="cast">Cast</a></li>
                 <li><a href="#" id="favourites">Favourites  </a></li>
-                <li><a href="#" id="subscriptions">Subscriptions</a></li>
+                <li class="dropdown1">
+                    <a href="#" class="dropbtn1">Subscriptions</a>
+                    <div class="dropdown-content1" id="subscriptions">
+                        <a href="#" id="viewSubscriptionTab">My Plan</a>
+                        <a href="#" id="manageSubscriptionTab">Change Plan</a>
+                    </div>
+                </li>
                 <li class="dropdown1">
                     <a href="#" class="dropbtn1">Payments</a>
                     <div class="dropdown-content1" id="payments">
@@ -105,6 +112,35 @@
     </form>
 </div>
 
+        <div id="ManageSubscriptionContainer">
+
+
+    <div id="plan">
+        <h1>Choose Your Subscription Plan</h1>
+        <label for="subscriptionPlan">Select Plan:</label>
+        <select id="subscriptionPlan">
+            <option value="" selected disabled>Select Plan</option>
+            <option value="basic">Basic</option>
+            <option value="standard">Standard</option>
+            <option value="premium">Premium</option>
+        </select>
+    </div>
+
+
+
+    <div id="duration">
+        <h1>Choose Subscription Duration</h1>
+        <label for="subscriptionDuration">Select Duration:</label>
+        <select id="subscriptionDuration">
+            <option value="" selected disabled>Select duration</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Annual">Annual</option>
+        </select>
+    </div>
+            <button type="button" id="showPrices">Show</button>
+        </div>
+
+        <div id="priceDisplay"></div>
 
 
 

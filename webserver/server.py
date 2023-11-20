@@ -12,6 +12,7 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, abort, jsonify, session
 import logging
+import hashlib
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir, static_url_path='/static')
@@ -69,6 +70,13 @@ def teardown_request(exception):
 # see for routing: https://flask.palletsprojects.com/en/2.0.x/quickstart/?highlight=routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
+
+def hash_password(password):
+    # Use a cryptographic hash function (SHA-256 in this example)
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    return hashed_password
+
+
 @app.route('/')
 def index():
     # DEBUG: this is debugging code to see what request looks like
@@ -102,11 +110,12 @@ def index():
 def login():
     payload = request.get_json()
     username = payload.get('username')
-    cursor = g.conn.execute(text("select * from user_information where name= :username"), {'username': username})
+    password = payload.get('password')
+    cursor = g.conn.execute(text("select * from user_information where name= :username and password = :password"), {'username': username, 'password':hash_password(password)})
     result = cursor.fetchall()
     cursor.close()
     if result:
-        session['user_id'] = result[0]['user_id']
+        session['user_id'] = result[0][0]
         return jsonify({'message': 'Login successful', 'status': 200}), 200
     else:
         return jsonify({'message': 'User not found', 'status': 400}), 400
@@ -121,11 +130,12 @@ def signup():
     phone = payload.get('phone')
     age = payload.get('age')
     gender = payload.get('gender')
+    password = payload.get('pass')
 
-    g.conn.execute(text("insert into user_information(name,email_id,phone_no,age,gender) values(:name,"
-                        ":emailid, :phone, :age, :gender)"),
+    g.conn.execute(text("insert into user_information(name,email_id,phone_no,age,gender,password) values(:name,"
+                        ":emailid, :phone, :age, :gender, :password)"),
                    {'name': name, 'emailid': emailid, 'phone': phone, 'age': age,
-                    'gender': gender})
+                    'gender': gender, 'password': hash_password(password)})
     g.conn.commit()
     return jsonify({'message': 'Login successful', 'status': 200}), 200
 
@@ -262,8 +272,8 @@ def write_review():
                          {'video_id': video_id, 'user_id': session.get('user_id')})
 
     if not res:
-        result = g.conn.execute(text("insert into review(comment_string,rating) values(:comment_string,"
-                                     ":rating) RETURNING review_id"),
+        result = g.conn.execute(text("insert into review(comment_string,rating, likes) values(:comment_string,"
+                                     ":rating, 0::BIT) RETURNING review_id"),
                                 {'comment_string': comment_string, 'rating': rating})
         g.conn.commit()
         review_id = result.fetchone()[0]
@@ -398,6 +408,7 @@ def add_new_card():
     g.conn.commit()
     return jsonify({'message': 'success', 'status': 200}), 200
 
+
 @app.route('/api/cards/<card_number>', methods=['DELETE'])
 def delete_card(card_number):
     g.conn.execute(text("DELETE FROM pays WHERE card_number = :card_number and user_id= :user_id"),
@@ -405,6 +416,40 @@ def delete_card(card_number):
     g.conn.commit()
     return jsonify({'message': 'success', 'status': 200}), 200
 
+
+@app.route('/api/recommendations', methods=['GET'])
+def get_recommendations():
+    cursor = g.conn.execute(text("select video.name, video.description, video.duration, video.video_link,"
+                                 "video.video_id, rev.rating from video_item_belongsto video "
+                                 "inner join linked_to linked on linked.video_id = video.video_id "
+                                 "inner join starred_by star on star.video_id = video.video_id "
+                                 "inner join rates rate on rate.video_id = video.video_id "
+                                 "inner join review rev on rev.review_id = rate.review_id "
+                                 "where category_id in (select distinct category_id from rates r inner join review re "
+                                 "on re.review_id = r.review_id inner join "
+                                 "user_information u on u.user_id = r.user_id "
+                                 "inner join video_item_belongsto v on v.video_id = r.video_id "
+                                 "where u.user_id = :user_id and re.likes = 1::BIT) or linked.genre_id in (select "
+                                 "distinct genre_id from rates r inner join review re on re.review_id = r.review_id "
+                                 "inner join "
+                                 " user_information u on u.user_id = r.user_id "
+                                 "inner join video_item_belongsto v on v.video_id = r.video_id "
+                                 "inner join linked_to l on l.video_id = v.video_id "
+                                 "where u.user_id = :user_id and re.likes = 1::BIT) or star.actor_id in (select "
+                                 "distinct actor_id from rates r inner join review re on re.review_id = r.review_id "
+                                 "inner join "
+                                 "user_information u on u.user_id = r.user_id "
+                                 "inner join video_item_belongsto v on v.video_id = r.video_id "
+                                 "inner join starred_by s on s.video_id = v.video_id "
+                                 "where u.user_id = :user_id and re.likes = 1::BIT) "
+                                 "group by rev.rating, video.name, video.description, video.duration, "
+                                 "video.video_link,video.video_id "
+                                 "having avg(rev.rating) > 9 "
+                                 "limit 10"), {'user_id': session.get('user_id')})
+    result = cursor.fetchall()
+    items = [dict(row) for row in result]
+    cursor.close()
+    return jsonify({'items': items, 'status': 'success'})
 
 
 if __name__ == "__main__":
