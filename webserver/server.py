@@ -228,8 +228,47 @@ def get_trending():
                                  "v.name, v.description, v.duration, v.video_link, v.category_id order by rating desc "
                                  "limit 10"))
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    cursor = g.conn.execute(
+        text(
+        "SELECT "
+        "   u.user_id, "
+        "   CASE "
+        "       WHEN m.user_id IS NOT NULL THEN 'Monthly Subscriber' "
+        "       WHEN a.user_id IS NOT NULL THEN 'Annual Subscriber' "
+        "       ELSE 'Not a Subscriber' "
+        "   END AS subscription_type "
+        "FROM "
+        "   user_information u "
+        "LEFT JOIN "
+        "   pays p ON u.user_id = p.user_id "
+        "LEFT JOIN "
+        "   monthly_subscriber m ON u.user_id = m.user_id "
+        "LEFT JOIN "
+        "   annual_subscriber a ON u.user_id = a.user_id "
+        "WHERE "
+        "   u.user_id = session.get('user_id')"
+        )   
+    )
+    subscription_result = cursor.fetchone()
+    cursor.close()
+    print('heyyyyyyyy',subscription_result)
+    is_subscriber = 0
+    if subscription_result:
+        is_subscriber = 1
+    items = [
+        {
+            'video_id': row[0],
+            'name': row[1].strip(),  # Remove extra spaces from the name
+            'description': row[2].strip(),  # Remove extra spaces from the description
+            'duration': row[3].strip(),  # Remove extra spaces from the duration
+            'video_link': row[4].strip(),  # Remove extra spaces from the video link
+            'category_id': row[5],
+            'is_subscriber': is_subscriber,
+            'rating': float(row[6]) if row[6] is not None else None  # Convert rating to float, handle None
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 

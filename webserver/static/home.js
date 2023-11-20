@@ -35,17 +35,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie-card');
         const videoId = movie.video_id;
+        const isSubscriber = movie.is_subscriber;
         movieCard.innerHTML = `
             <h3>${movie.name}</h3>
             <p>${movie.description}</p>
             <p>Duration: ${movie.duration}</p>
             <a href="#" class="read-reviews" data-movie-id="${videoId}">Reviews</a>
+            <a href="#" class="watch-video" watch-video-id="${videoId}">Watch the video</a>
             </br></br>
             <iframe src="${movie.video_link}" width="500px" height="300px" data-video-id="${videoId}"></iframe>
             `;
         const readReviewsLink = movieCard.querySelector('.read-reviews');
 
-   readReviewsLink.addEventListener('click', function (event) {
+        readReviewsLink.addEventListener('click', function (event) {
             event.preventDefault();
             const videoId = this.getAttribute('data-movie-id');
 
@@ -62,9 +64,58 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => console.error('Error fetching reviews:', error));
         });
 
+        watchVideoLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            const videoId = this.getAttribute('watch-video-id');
+            if(!isSubscriber) {
+                alert('Please subscribe using subscriptions tab');
+            }
+            else {
+                showVideoDialog(movie);
+            }
+        });
+
 
         return movieCard;
     }
+   
+   function showVideoDialog(movie) {
+        hideAllSections();
+        const movieContainer = document.getElementById('movieContainer');
+        movieContainer.innerHTML = '';
+        const videoCard = createVideoCard(movie);
+        movieContainer.appendChild(videoCard);
+   }
+
+   function createVideoCard(movie) {
+    const videoCard = document.createElement('div');
+    videoCard.classList.add('video-card');
+    videoCard.innerHTML = `
+        <h3>${movie.name}</h3>
+        <p>${movie.description}</p>
+        <p>Duration: ${movie.duration}</p>
+        <a href="#" class="read-reviews" data-movie-id="${videoId}">Reviews</a>
+        </br></br>
+        <iframe src="${movie.video_link}" width="100%" height="300px" data-video-id="${videoId}"></iframe>
+        `;
+
+        readReviewsLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            const videoId = this.getAttribute('data-movie-id');
+
+            fetch(`http://127.0.0.1:8111/api/reviews/${videoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Display reviews in a dialog box
+                        showReviewsDialog(data.items, videoId);
+                    } else {
+                        console.error('Failed to fetch reviews:', data.status);
+                    }
+                })
+                .catch(error => console.error('Error fetching reviews:', error));
+        });
+   }
 
    function showReviewsDialog(reviews, videoId) {
     // Create a dialog box
