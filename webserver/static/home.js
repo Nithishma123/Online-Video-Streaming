@@ -809,19 +809,9 @@ function showPrices() {
 
         // Check if both plan and duration are selected
         if (selectedPlan && selectedDuration) {
-            price = displayPrices(selectedPlan, selectedDuration);
-            document.getElementById('plan').style.display = 'none';
-            document.getElementById('duration').style.display = 'none';
-            document.getElementById('showPrices').style.display = 'none';
+            displayPrices(selectedPlan, selectedDuration);
             document.getElementById('priceDisplay').style.display = 'block';
-            fetchAndDisplayCards();
-            var cards = document.getElementsByClassName('card-container');
-            for (var i = 0; i < cards.length; i++) {
-            cards[i].addEventListener('click', function () {
-
-                initiatePayment(event.target.getAttribute('data-card-number'), price);
-            });
-        }
+            document.getElementById('proceedToPayment').style.display = 'block';
         } else {
             alert('Please select both plan and duration before showing prices.');
         }
@@ -858,18 +848,26 @@ function showPrices() {
 
     }
 
-    document.getElementById('showPrices').addEventListener('click', showPrices);
-
+    document.getElementById('showPrices').addEventListener('click', function () {
+        showPrices();
+    });
 
     document.getElementById('manageSubscriptionTab').addEventListener('click', function () {
-
         displayPlans();
+    });
+
+    document.getElementById('proceedToPayment').addEventListener('click', function () {
+        fetchAndDisplayCards();
     });
 
 
     function displayPlans() {
        hideAllSections();
        document.getElementById('ManageSubscriptionContainer').style.display = 'block';
+       document.getElementById('plan').style.display = 'block';
+       document.getElementById('duration').style.display = 'block';
+       document.getElementById('showPrices').style.display = 'block';
+       document.getElementById('proceedToPayment').style.display = 'none';
     }
 
     document.getElementById('recommendations').addEventListener('click', function () {
@@ -906,7 +904,6 @@ function showPrices() {
         document.getElementById('subscriptionsContainer').style.display = 'none';
         document.getElementById('ManageSubscriptionContainer').style.display = 'none';
         document.getElementById('priceDisplay').style.display = 'none';
-
     }
 
 
