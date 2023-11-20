@@ -111,11 +111,25 @@ def login():
     payload = request.get_json()
     username = payload.get('username')
     password = payload.get('password')
-    cursor = g.conn.execute(text("select * from user_information where name= :username and password = :password"), {'username': username, 'password':hash_password(password)})
+    cursor = g.conn.execute(text("select * from user_information where name= :username and password = :password"),
+                            {'username': username, 'password': hash_password(password)})
     result = cursor.fetchall()
     cursor.close()
     if result:
         session['user_id'] = result[0][0]
+        cursor = g.conn.execute(
+            text("select * from user_information u left join monthly_subscriber m on m.user_id = u.user_id left join "
+                 "annual_subscriber a on a.user_id = m.user_id where u.user_id= :user_id and (m.plan_expiry is not "
+                 "null or "
+                 "a.expiry is not null) "
+                 ), {'user_id': session.get('user_id')}
+        )
+        res = cursor.fetchone()
+        cursor.close()
+        if res:
+            session['is_subscriber'] = 1
+        else:
+            session['is_subscriber'] = 0
         return jsonify({'message': 'Login successful', 'status': 200}), 200
     else:
         return jsonify({'message': 'User not found', 'status': 400}), 400
@@ -143,6 +157,11 @@ def signup():
 @app.route('/home.html')
 def home_screen():
     return render_template('home.html')
+
+
+@app.route('/api/subscriber')
+def is_subscriber():
+    return jsonify({'items': session.get('is_subscriber'), 'status': 'success'})
 
 
 @app.route('/api/movies/<int:category_id>', methods=['GET'])
@@ -229,46 +248,7 @@ def get_trending():
                                  "limit 10"))
     result = cursor.fetchall()
     cursor.close()
-    cursor = g.conn.execute(
-        text(
-        "SELECT "
-        "   u.user_id, "
-        "   CASE "
-        "       WHEN m.user_id IS NOT NULL THEN 'Monthly Subscriber' "
-        "       WHEN a.user_id IS NOT NULL THEN 'Annual Subscriber' "
-        "       ELSE 'Not a Subscriber' "
-        "   END AS subscription_type "
-        "FROM "
-        "   user_information u "
-        "LEFT JOIN "
-        "   pays p ON u.user_id = p.user_id "
-        "LEFT JOIN "
-        "   monthly_subscriber m ON u.user_id = m.user_id "
-        "LEFT JOIN "
-        "   annual_subscriber a ON u.user_id = a.user_id "
-        "WHERE "
-        "   u.user_id = session.get('user_id')"
-        )   
-    )
-    subscription_result = cursor.fetchone()
-    cursor.close()
-    print('heyyyyyyyy',subscription_result)
-    is_subscriber = 0
-    if subscription_result:
-        is_subscriber = 1
-    items = [
-        {
-            'video_id': row[0],
-            'name': row[1].strip(),  # Remove extra spaces from the name
-            'description': row[2].strip(),  # Remove extra spaces from the description
-            'duration': row[3].strip(),  # Remove extra spaces from the duration
-            'video_link': row[4].strip(),  # Remove extra spaces from the video link
-            'category_id': row[5],
-            'is_subscriber': is_subscriber,
-            'rating': float(row[6]) if row[6] is not None else None  # Convert rating to float, handle None
-        }
-        for row in result
-    ]
+    items = [dict(row) for row in result]
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -310,7 +290,7 @@ def write_review():
     res = g.conn.execute(text("select * from rates where video_id = :video_id and user_id = :user_id"),
                          {'video_id': video_id, 'user_id': session.get('user_id')})
 
-    if not res:
+    if res.rowcount == 0:
         result = g.conn.execute(text("insert into review(comment_string,rating, likes) values(:comment_string,"
                                      ":rating, 0::BIT) RETURNING review_id"),
                                 {'comment_string': comment_string, 'rating': rating})

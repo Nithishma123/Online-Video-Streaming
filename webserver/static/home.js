@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-
+    let isSubscriber = 0;
     fetchAndDisplayTrending();
     fetchAndDisplayRecentlyWatched();
+    checkIsSubscriber();
 
     function fetchAndDisplayMovies() {
         fetch('http://127.0.0.1:8111/api/movies/2')
@@ -31,11 +32,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+    function fetchAndDisplayMovies() {
+        fetch('http://127.0.0.1:8111/api/movies/2')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    displayMovies(data.items);
+                    showMoviesSection();
+                } else {
+                    console.error('Failed to fetch movies:', data.status);
+                }
+            })
+            .catch(error => console.error('Error fetching movies:', error));
+    }
+
+function checkIsSubscriber() {
+    return fetch('http://127.0.0.1:8111/api/subscriber')
+        .then(response => response.json())
+        .then(data => {
+            isSubscriber = data.items;
+            console.log('sub-'+isSubscriber)
+            return isSubscriber;
+        })
+        .catch(error => {
+            console.error('Error fetching subscription:', error);
+            return 0; // Return a default value in case of an error
+        });
+}
+
     function createMovieCard(movie) {
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie-card');
         const videoId = movie.video_id;
-        const isSubscriber = movie.is_subscriber;
         movieCard.innerHTML = `
             <h3>${movie.name}</h3>
             <p>${movie.description}</p>
@@ -46,6 +75,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <iframe src="${movie.video_link}" width="500px" height="300px" data-video-id="${videoId}"></iframe>
             `;
         const readReviewsLink = movieCard.querySelector('.read-reviews');
+
+        const watchVideoLink = movieCard.querySelector('.watch-video');
 
         readReviewsLink.addEventListener('click', function (event) {
             event.preventDefault();
@@ -81,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
    
    function showVideoDialog(movie) {
         hideAllSections();
+        document.getElementById('moviesContainer').style.display = 'block'
         const movieContainer = document.getElementById('movieContainer');
         movieContainer.innerHTML = '';
         const videoCard = createVideoCard(movie);
@@ -94,11 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
         <h3>${movie.name}</h3>
         <p>${movie.description}</p>
         <p>Duration: ${movie.duration}</p>
-        <a href="#" class="read-reviews" data-movie-id="${videoId}">Reviews</a>
+        <a href="#" class="read-reviews" data-movie-id="${movie.video_id}">Reviews</a>
         </br></br>
-        <iframe src="${movie.video_link}" width="100%" height="300px" data-video-id="${videoId}"></iframe>
+        <iframe src="${movie.video_link}" width="100%" height="300px" data-video-id="${movie.video_id}"></iframe>
         `;
-
+        const readReviewsLink = videoCard.querySelector('.read-reviews');
         readReviewsLink.addEventListener('click', function (event) {
             event.preventDefault();
             const videoId = this.getAttribute('data-movie-id');
@@ -115,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => console.error('Error fetching reviews:', error));
         });
+        return videoCard;
    }
 
    function showReviewsDialog(reviews, videoId) {
@@ -192,7 +225,6 @@ function submitReview(videoId, reviewText, rating) {
             video_id: videoId,
             comment_string: reviewText,
             rating: rating,
-            // Add any other required parameters
         }),
     })
     .then(response => response.json())
@@ -507,6 +539,7 @@ document.getElementById('logout').addEventListener('click', function () {
     });
 
 function logoutUser() {
+        isSubscriber = 0;
         localStorage.removeItem('authToken');
         window.location.href = '/';
     }
