@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     checkIsSubscriber();
 
     function fetchAndDisplayMovies() {
-        fetch('http://127.0.0.1:8111/api/movies/2')
+        fetch('/api/movies/2')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function fetchAndDisplayMovies() {
-        fetch('http://127.0.0.1:8111/api/movies/2')
+        fetch('/api/movies/2')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 function checkIsSubscriber() {
-    return fetch('http://127.0.0.1:8111/api/subscriber')
+    return fetch('/api/subscriber')
         .then(response => response.json())
         .then(data => {
             isSubscriber = data.items;
@@ -83,7 +83,7 @@ function checkIsSubscriber() {
             event.preventDefault();
             const videoId = this.getAttribute('data-movie-id');
 
-            fetch(`http://127.0.0.1:8111/api/reviews/${videoId}`)
+            fetch(`/api/reviews/${videoId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
@@ -110,7 +110,7 @@ function checkIsSubscriber() {
 
         return movieCard;
     }
-   
+
    function showVideoDialog(movie) {
         hideAllSections();
         document.getElementById('moviesContainer').style.display = 'block'
@@ -136,7 +136,7 @@ function checkIsSubscriber() {
             event.preventDefault();
             const videoId = this.getAttribute('data-movie-id');
 
-            fetch(`http://127.0.0.1:8111/api/reviews/${videoId}`)
+            fetch(`/api/reviews/${videoId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
@@ -214,7 +214,7 @@ function checkIsSubscriber() {
 }
 
 function submitReview(videoId, reviewText, rating) {
-    const apiUrl = 'http://127.0.0.1:8111/api/write-reviews';
+    const apiUrl = '/api/write-reviews';
 
     // Assuming your API requires a POST request with the review details
     fetch(apiUrl, {
@@ -248,7 +248,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayCategories() {
-        fetch('http://127.0.0.1:8111/api/categories')
+        fetch('/api/categories')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -288,7 +288,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayMoviesByCategory(categoryId) {
-        fetch(`http://127.0.0.1:8111/api/movies/${categoryId}`)
+        fetch(`/api/movies/${categoryId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -317,7 +317,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayGenres() {
-        fetch('http://127.0.0.1:8111/api/genres')
+        fetch('/api/genres')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -356,7 +356,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayMoviesByGenre(genreId) {
-        fetch(`http://127.0.0.1:8111/api/movies/genre/${genreId}`)
+        fetch(`/api/movies/genre/${genreId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -380,7 +380,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayCast() {
-        fetch('http://127.0.0.1:8111/api/cast')
+        fetch('/api/cast')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -419,7 +419,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayMoviesByCast(castId) {
-        fetch(`http://127.0.0.1:8111/api/movies/cast/${castId}`)
+        fetch(`/api/movies/cast/${castId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -444,7 +444,7 @@ function submitReview(videoId, reviewText, rating) {
     });
 
     function fetchAndDisplayTrending() {
-        fetch('http://127.0.0.1:8111/api/trending')
+        fetch('/api/trending')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -458,7 +458,7 @@ function submitReview(videoId, reviewText, rating) {
     }
 
     function fetchAndDisplayRecentlyWatched() {
-        fetch('http://127.0.0.1:8111/api/recently-watched')
+        fetch('/api/recently-watched')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -500,7 +500,7 @@ function submitReview(videoId, reviewText, rating) {
 
 function updateViewed(videoId){
 
-fetch('http://127.0.0.1:8111/api/viewing', {
+fetch('/api/viewing', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -553,7 +553,7 @@ document.getElementById('viewProfileTab').addEventListener('click', function () 
     // Function to fetch and display profile information
     function fetchAndDisplayProfile() {
         // Assuming you have an API endpoint for fetching profile information
-        fetch('http://127.0.0.1:8111/api/profile')
+        fetch('/api/profile')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -627,7 +627,7 @@ function showProfileSection() {
     // Function to fetch and display cards information
     function fetchAndDisplayCards() {
         // Assuming you have an API endpoint for fetching cards information
-        fetch('http://127.0.0.1:8111/api/cards')
+        fetch('/api/cards')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -683,7 +683,7 @@ function submitCardDetails() {
         };
 
         // Make API call using Fetch
-        fetch('http://127.0.0.1:8111/api/new-card', {
+        fetch('/api/new-card', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -757,7 +757,7 @@ function createCards(card) {
     });
 
     function fetchAndDisplayUserReviews() {
-        fetch('http://127.0.0.1:8111/api/user-reviews')
+        fetch('/api/user-reviews')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -803,7 +803,7 @@ function createUserReviews(review) {
 
 function performSubscriptionQueryAndDisplay() {
     // Fetch the subscription details using the SQL query
-    fetch('http://127.0.0.1:8111/api/subscription')
+    fetch('/api/subscription')
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
@@ -859,7 +859,7 @@ function showSubcriptionSection() {
     });
 
     function fetchAndDisplayFavourites() {
-        fetch('http://127.0.0.1:8111/api/favourites')
+        fetch('/api/favourites')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -890,7 +890,7 @@ function showSubcriptionSection() {
 // Function to remove a card
 function removeCard(cardNumber) {
     // Assuming you have an API endpoint for deleting cards
-    fetch(`http://127.0.0.1:8111/api/cards/${cardNumber}`, {
+    fetch(`/api/cards/${cardNumber}`, {
         method: 'DELETE',
     })
         .then(response => response.json())
@@ -979,7 +979,7 @@ function showPrices() {
     });
 
     function fetchAndDisplayRecommendations() {
-        fetch('http://127.0.0.1:8111/api/recommendations')
+        fetch('/api/recommendations')
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
@@ -995,7 +995,7 @@ function showPrices() {
     function provideSubscription(type, price) {
 
     // Assuming your API requires a POST request with the review details
-    fetch('http://127.0.0.1:8111/api/user-subscription', {
+    fetch('/api/user-subscription', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
