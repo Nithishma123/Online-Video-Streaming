@@ -175,8 +175,18 @@ def get_all_movies(category_id):
              "order by avg(re.rating) desc NULLS last"),
         {'category_id': category_id})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'name': row[0],
+            'description': row[1].strip(),  # Remove extra spaces from the name
+            'duration': row[2].strip(),  # Remove extra spaces from the duration
+            'video_link': row[3].strip(),  # Remove extra spaces from the video link
+            'video_id': row[4],
+            'rating': float(row[5]) if row[5] is not None else None  # Convert rating to float, handle None
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -184,8 +194,14 @@ def get_all_movies(category_id):
 def get_all_categories():
     cursor = g.conn.execute(text("select * from categories"))
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'category_id': row[0],
+            'category_name': row[1].strip()
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -193,8 +209,14 @@ def get_all_categories():
 def get_all_genres():
     cursor = g.conn.execute(text("select * from genre"))
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'genre_id': row[0],
+            'name': row[1].strip()
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -202,15 +224,21 @@ def get_all_genres():
 def get_all_cast():
     cursor = g.conn.execute(text("select * from actor"))
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'actor_id': row[0],
+            'actor_name': row[1].strip()
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
 @app.route('/api/movies/genre/<int:genre_id>', methods=['GET'])
 def get_movie_by_genre(genre_id):
     cursor = g.conn.execute(
-        text("select v.video_id, v.name, v.description, v.duration, v.video_link, avg(re.rating) as rating "
+        text("select v.video_id, v.name, v.description, v.duration, v.video_link,v.video_id, avg(re.rating) as rating "
              "from linked_to l "
              "inner join video_item_belongsto v on v.video_id = l.video_id "
              "left join rates r on r.video_id = v.video_id "
@@ -220,9 +248,19 @@ def get_movie_by_genre(genre_id):
              "order by avg(re.rating) desc NULLS last"),
         {'genre_id': genre_id})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
-    logging.debug(items)
+    items = [
+        {
+            'video_id': row[0],
+            'name': row[1].strip(),  # Remove extra spaces from the name
+            'description': row[2].strip(),  # Remove extra spaces from the description
+            'duration': row[3].strip(),  # Remove extra spaces from the duration
+            'video_link': row[4].strip(),  # Remove extra spaces from the video link
+            'video_id': row[5],
+            'rating': float(row[6]) if row[6] is not None else None  # Convert rating to float, handle None
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -233,8 +271,20 @@ def get_movie_by_actor(actor_id):
                                  "s.video_id where s.actor_id = :actor_id"),
                             {'actor_id': actor_id})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'actor_id': row[0],
+            'actor_name': row[1].strip(),  # Remove extra spaces from the name
+            'video_id': row[2],
+            'name': row[5].strip(),
+            'description': row[6].strip(),  # Remove extra spaces from the description
+            'duration': row[7].strip(),  # Remove extra spaces from the duration
+            'video_link': row[8].strip(),  # Remove extra spaces from the video link
+            'category_id': row[9]
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
