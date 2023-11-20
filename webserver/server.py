@@ -517,8 +517,24 @@ def get_favourites():
                                  ":user_id and re.likes = 1::BIT"),
                             {'user_id': session.get('user_id')})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'video_id': row[0],
+            'user_id': row[1],
+            'review_id': row[2],
+            'rating': row[4],
+            'comment_string': row[5].strip(),
+            'likes': row[6],
+            'user_id': row[7],
+            'name': row[15].strip(),
+            'description': row[16],
+            'duration': row[17],
+            'video_link': row[18]
+
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
