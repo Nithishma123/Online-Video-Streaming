@@ -346,8 +346,14 @@ def get_reviews(video_id):
                                  "r.video_id = :video_id"),
                             {'video_id': video_id})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'comment_string': row[5].strip(),
+            'rating': row[4],
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
@@ -415,8 +421,19 @@ def get_profile_information():
                                  "u.user_id = :user_id"),
                             {'user_id': session.get('user_id')})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'name': row[1].strip(),
+            'age': row[2],  # Remove extra spaces from the name
+            'gender': row[3],  # Remove extra spaces from the description
+            'phone_no': row[5],  # Remove extra spaces from the duration
+            'expiry': row[9],  # Remove extra spaces from the video link
+            'plan_expiry': row[13],
+            'since': row[16]
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
