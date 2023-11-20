@@ -426,8 +426,20 @@ def get_cards():
                                  "pi.card_number where p.user_id = :user_id"),
                             {'user_id': session.get('user_id')})
     result = cursor.fetchall()
-    items = [dict(row) for row in result]
     cursor.close()
+    items = [
+        {
+            'card_number': row[0],
+            'name': row[1].strip(),
+            'card_type': row[2].strip(),
+            'expiry': row[3],
+            'autopay': row[4],
+            'user_id': row[6],
+            'since': row[7]
+
+        }
+        for row in result
+    ]
     return jsonify({'items': items, 'status': 'success'})
 
 
