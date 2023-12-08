@@ -144,15 +144,31 @@ Insertion of a new record into the MONTHLY_SUBSCRIBER table.
 **Trigger Action:**
 The trigger (update_subscription_status_monthly) updates the subscription status in the USER_INFORMATION table based on the user's monthly subscription plan.
 
-**Example SQL:**
+**Trigger On UPDATE:**
 
 ```sql
--- Inserting a new record into MONTHLY_SUBSCRIBER
-INSERT INTO MONTHLY_SUBSCRIBER (user_id, plan_expiry)
-VALUES (1, '2023-12-31');
+--On Update
+UPDATE MONTHLY_SUBSCRIBER SET plan_expiry = '2023-12-30' FROM (
+    SELECT M.USER_ID
+    FROM MONTHLY_SUBSCRIBER M
+) AS M
+INNER JOIN USER_INFORMATION UI ON UI.USER_ID = M.USER_ID;
+
+SELECT UI.user_id, UI.name, UI.subscription_status, M.plan_expiry from USER_INFORMATION UI
+inner JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID;
 ```
 **Result:**
-The trigger fires, updates the subscription status in the USER_INFORMATION table, and logs a notice message.
+
+**Trigger On DELETE:**
+
+```sql
+--On Delete
+DELETE FROM MONTHLY_SUBSCRIBER M WHERE M.user_id = 17;
+SELECT UI.user_id, UI.name, UI.subscription_status from USER_INFORMATION UI
+where UI.user_id=17;
+```
+**Result:**
+
 
 
 
