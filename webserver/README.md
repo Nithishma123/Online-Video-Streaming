@@ -82,23 +82,27 @@ To automatically update the subscription status of users based on their subscrip
 
 **SQL Statements:**
 ```sql
--- Create a function to update subscription status with logging
-CREATE OR REPLACE FUNCTION update_subscription_status()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION na3062.update_subscription_status()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
 BEGIN
     UPDATE USER_INFORMATION
     SET subscription_status = 
         CASE
-            WHEN MS.plan_expiry >= CURRENT_DATE OR ASB.expiry >= CURRENT_DATE THEN 'Active'
+            WHEN EXISTS (
+                SELECT 1
+                FROM MONTHLY_SUBSCRIBER MS
+                WHERE MS.user_id = NEW.user_id AND MS.plan_expiry >= CURRENT_DATE
+            ) OR EXISTS (
+                SELECT 1
+                FROM ANNUAL_SUBSCRIBER ASB
+                WHERE ASB.user_id = NEW.user_id AND ASB.expiry >= CURRENT_DATE
+            )
+            THEN 'Active'
             ELSE 'Inactive'
         END
-	FROM (
-    SELECT UI.USER_ID
-    FROM USER_INFORMATION UI
-) AS UI
-    LEFT JOIN MONTHLY_SUBSCRIBER MS ON UI.user_id = MS.user_id
-    LEFT JOIN ANNUAL_SUBSCRIBER ASB ON UI.user_id = ASB.user_id
-    WHERE UI.user_id = NEW.user_id;
+    WHERE user_id = NEW.user_id;
 
     RETURN NEW;
 END;
