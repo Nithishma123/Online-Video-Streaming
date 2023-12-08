@@ -129,13 +129,19 @@ EXECUTE FUNCTION update_subscription_status();
 SELECT video_id, name, plot
 FROM VIDEO_ITEM_BELONGSTO
 WHERE to_tsvector('english', plot) @@ to_tsquery('adventure');
+```
+**Result:**
+![Image](../image4.jpeg)
 
--- Find reviews containing the phrase 'good or love and movie'
+```sql
+-- Find REVIEWs with comment containing the words 'good' or 'love' and the word 'movie'
 SELECT review_id, comment_string
 FROM REVIEW
 WHERE to_tsvector('english', comment_string) @@ to_tsquery('good | love & movie');
-
 ```
+
+**Result:**
+![Image](../image5.jpeg)
 
 ### 2. Array Access Query
 ```sql
@@ -143,25 +149,34 @@ WHERE to_tsvector('english', comment_string) @@ to_tsquery('good | love & movie'
 SELECT video_id, name, tags
 FROM VIDEO_ITEM_BELONGSTO
 WHERE '{Movies,Drama}'::TEXT[] <@ tags;
+```
+**Result:**
+![Image](../image6.jpeg)
 
--- Retrieve videos with at least one specified tag
+```sql
+-- Retrieve videos with atleast one specified tag
 SELECT video_id, name, tags
 FROM VIDEO_ITEM_BELONGSTO
 WHERE tags && ARRAY['Action', 'Tv Shows'];
-
 ```
+**Result:**
+![Image](../image7.jpeg)
+
+
 
 ### 3. Composite Type Query
 ```sql
 -- Retrieve video information and metadata information
-SELECT name, (metadata).release_date, (metadata).video_language, (metadata).budget
+SELECT name, (metadata).release_date, (metadata).language, (metadata).budget
 FROM VIDEO_ITEM_BELONGSTO V
 INNER JOIN VIDEO_METADATA M ON V.video_id = M.video_id;
 ```
+**Result:**
+![Image](../image8.jpeg)
 
 ### 4. Trigger Example
 **Event:**
-Insertion of a new record into the MONTHLY_SUBSCRIBER table or an update on old record.
+Insertion of a new record into the MONTHLY_SUBSCRIBER table.
 
 **Trigger Action:**
 The trigger (update_subscription_status_monthly) updates the subscription status in the USER_INFORMATION table based on the user's monthly subscription plan.
