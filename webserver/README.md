@@ -160,6 +160,7 @@ SELECT UI.name, UI.subscription_status from USER_INFORMATION UI
 INNER JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID
 ```
 **Result:**
+![Image](../image1.jpeg)
 
 
 **Trigger On UPDATE:**
@@ -176,6 +177,7 @@ SELECT UI.user_id, UI.name, UI.subscription_status, M.plan_expiry from USER_INFO
 inner JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID;
 ```
 **Result:**
+![Image](../image2.jpeg)
 
 **Trigger On DELETE:**
 
@@ -186,6 +188,7 @@ SELECT UI.user_id, UI.name, UI.subscription_status from USER_INFORMATION UI
 where UI.user_id=17;
 ```
 **Result:**
+![Image](../image3.jpeg)
 
 
 
