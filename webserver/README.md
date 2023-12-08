@@ -130,6 +130,7 @@ SELECT video_id, name, plot
 FROM VIDEO_ITEM_BELONGSTO
 WHERE to_tsvector('english', plot) @@ to_tsquery('adventure');
 
+-- Find reviews containing the phrase 'good or love and movie'
 SELECT review_id, comment_string
 FROM REVIEW
 WHERE to_tsvector('english', comment_string) @@ to_tsquery('good | love & movie');
