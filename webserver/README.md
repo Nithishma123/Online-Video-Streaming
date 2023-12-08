@@ -143,6 +143,12 @@ WHERE to_tsvector('english', comment_string) @@ to_tsquery('good | love & movie'
 SELECT video_id, name, tags
 FROM VIDEO_ITEM_BELONGSTO
 WHERE '{Movies,Drama}'::TEXT[] <@ tags;
+
+-- Retrieve videos with at least one specified tag
+SELECT video_id, name, tags
+FROM VIDEO_ITEM_BELONGSTO
+WHERE tags && ARRAY['Action', 'Horror'];
+
 ```
 
 ### 3. Composite Type Query
