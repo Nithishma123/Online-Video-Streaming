@@ -79,7 +79,25 @@ To automatically update the subscription status of users based on their subscrip
 -- Create a function to update subscription status with logging
 CREATE OR REPLACE FUNCTION update_subscription_status()
 RETURNS TRIGGER AS $$
--- (Function code as provided in the queries)
+BEGIN
+    UPDATE USER_INFORMATION
+    SET subscription_status = 
+        CASE
+            WHEN MS.plan_expiry >= CURRENT_DATE OR ASB.expiry >= CURRENT_DATE THEN 'Active'
+            ELSE 'Inactive'
+        END
+	FROM (
+    SELECT UI.USER_ID
+    FROM USER_INFORMATION UI
+) AS UI
+    LEFT JOIN MONTHLY_SUBSCRIBER MS ON UI.user_id = MS.user_id
+    LEFT JOIN ANNUAL_SUBSCRIBER ASB ON UI.user_id = ASB.user_id
+    WHERE UI.user_id = NEW.user_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 
 -- Create a trigger for monthly subscriber updates
 CREATE TRIGGER update_subscription_status_monthly
@@ -93,6 +111,48 @@ AFTER INSERT OR UPDATE ON ANNUAL_SUBSCRIBER
 FOR EACH ROW
 EXECUTE FUNCTION update_subscription_status();
 ```
+
+## Queries
+### 1. Full-text Search Query
+```sql
+-- Find videos with descriptions containing the word 'adventure'
+SELECT video_id, name, plot
+FROM VIDEO_ITEM_BELONGSTO
+WHERE to_tsvector('english', plot) @@ to_tsquery('adventure');
+```
+
+### 2. Array Access Query
+```sql
+-- Retrieve videos with specific tags
+SELECT video_id, name, tags
+FROM VIDEO_ITEM_BELONGSTO
+WHERE '{Movies,Drama}'::TEXT[] <@ tags;
+```
+
+### 3. Composite Type Query
+```sql
+-- Retrieve video information and metadata information
+SELECT name, (metadata).release_date, (metadata).language, (metadata).budget
+FROM VIDEO_ITEM_BELONGSTO V
+INNER JOIN VIDEO_METADATA M ON V.video_id = M.video_id;
+```
+
+### 4. Trigger Example
+**Event:**
+Insertion of a new record into the MONTHLY_SUBSCRIBER table.
+
+**Trigger Action:**
+The trigger (update_subscription_status_monthly) updates the subscription status in the USER_INFORMATION table based on the user's monthly subscription plan.
+
+**Example SQL:**
+
+```sql
+-- Inserting a new record into MONTHLY_SUBSCRIBER
+INSERT INTO MONTHLY_SUBSCRIBER (user_id, plan_expiry)
+VALUES (1, '2023-12-31');
+```
+**Result:**
+The trigger fires, updates the subscription status in the USER_INFORMATION table, and logs a notice message.
 
 
 
