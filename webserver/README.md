@@ -131,7 +131,7 @@ FROM VIDEO_ITEM_BELONGSTO
 WHERE to_tsvector('english', plot) @@ to_tsquery('adventure');
 ```
 **Result:**
-![Image](../image4.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image4.jpeg)
 
 ```sql
 -- Find REVIEWs with comment containing the words 'good' or 'love' and the word 'movie'
@@ -141,7 +141,7 @@ WHERE to_tsvector('english', comment_string) @@ to_tsquery('good | love & movie'
 ```
 
 **Result:**
-![Image](../image5.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image5.jpeg)
 
 ### 2. Array Access Query
 ```sql
@@ -151,7 +151,7 @@ FROM VIDEO_ITEM_BELONGSTO
 WHERE '{Movies,Drama}'::TEXT[] <@ tags;
 ```
 **Result:**
-![Image](../image6.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image6.jpeg)
 
 ```sql
 -- Retrieve videos with atleast one specified tag
@@ -160,7 +160,7 @@ FROM VIDEO_ITEM_BELONGSTO
 WHERE tags && ARRAY['Action', 'Tv Shows'];
 ```
 **Result:**
-![Image](../image7.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image7.jpeg)
 
 
 
@@ -172,7 +172,7 @@ FROM VIDEO_ITEM_BELONGSTO V
 INNER JOIN VIDEO_METADATA M ON V.video_id = M.video_id;
 ```
 **Result:**
-![Image](../image8.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image8.jpeg)
 
 ### 4. Trigger Example
 **Event:**
@@ -187,7 +187,7 @@ SELECT UI.name, UI.subscription_status from USER_INFORMATION UI
 INNER JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID
 ```
 **Result:**
-![Image](../image1.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image1.jpeg)
 
 
 **Trigger On UPDATE:**
@@ -204,7 +204,7 @@ SELECT UI.user_id, UI.name, UI.subscription_status, M.plan_expiry from USER_INFO
 inner JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID;
 ```
 **Result:**
-![Image](../image2.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image2.jpeg)
 
 **Trigger On DELETE:**
 
@@ -215,7 +215,7 @@ SELECT UI.user_id, UI.name, UI.subscription_status from USER_INFORMATION UI
 where UI.user_id=17;
 ```
 **Result:**
-![Image](../image3.jpeg)
+![Image](https://github.com/Nithishma123/DB-VideoStreaming/blob/master/image3.jpeg)
 
 
 
