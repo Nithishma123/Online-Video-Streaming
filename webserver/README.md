@@ -147,7 +147,7 @@ WHERE '{Movies,Drama}'::TEXT[] <@ tags;
 -- Retrieve videos with at least one specified tag
 SELECT video_id, name, tags
 FROM VIDEO_ITEM_BELONGSTO
-WHERE tags && ARRAY['Action', 'Horror'];
+WHERE tags && ARRAY['Action', 'Tv Shows'];
 
 ```
 
