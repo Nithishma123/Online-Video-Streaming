@@ -167,7 +167,7 @@ WHERE tags && ARRAY['Action', 'Tv Shows'];
 ### 3. Composite Type Query
 ```sql
 -- Retrieve video information and metadata information
-SELECT name, (metadata).release_date, (metadata).language, (metadata).budget
+SELECT name, (metadata).release_date, (metadata).video_language, (metadata).budget
 FROM VIDEO_ITEM_BELONGSTO V
 INNER JOIN VIDEO_METADATA M ON V.video_id = M.video_id;
 ```
@@ -176,7 +176,7 @@ INNER JOIN VIDEO_METADATA M ON V.video_id = M.video_id;
 
 ### 4. Trigger Example
 **Event:**
-Insertion of a new record into the MONTHLY_SUBSCRIBER table.
+Insertion of a new record into the MONTHLY_SUBSCRIBER table or an update on existing record.
 
 **Trigger Action:**
 The trigger (update_subscription_status_monthly) updates the subscription status in the USER_INFORMATION table based on the user's monthly subscription plan.
