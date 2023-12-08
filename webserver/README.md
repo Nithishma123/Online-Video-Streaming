@@ -129,6 +129,11 @@ EXECUTE FUNCTION update_subscription_status();
 SELECT video_id, name, plot
 FROM VIDEO_ITEM_BELONGSTO
 WHERE to_tsvector('english', plot) @@ to_tsquery('adventure');
+
+SELECT review_id, comment_string
+FROM REVIEW
+WHERE to_tsvector('english', comment_string) @@ to_tsquery('good | love & movie');
+
 ```
 
 ### 2. Array Access Query
