@@ -15,13 +15,17 @@
 Add a text attribute to enable full-text search on document-style data.
 
 **Rationale:**
-To enhance the search capabilities of the database and provide users with the ability to search for videos based on textual content, we added a 'plot' attribute to the `VIDEO_ITEM_BELONGSTO` table.
+To enhance the search capabilities of the database and provide users with the ability to search for videos based on textual content, we added a 'plot' attribute to the `VIDEO_ITEM_BELONGSTO` table. We have also upgraded the comments to a 'TEXT' attribute to enhance user experience. This change allows users to perform comprehensive full-text searches, making it easier to select videos based on their preferences and gain insights into reviews. 
 
 **SQL Statements:**
 ```sql
 -- Add text attribute 'plot' to VIDEO_ITEM_BELONGSTO
 ALTER TABLE VIDEO_ITEM_BELONGSTO
 ADD COLUMN if not exists plot TEXT;
+
+--Updated the type of 'comments_string' in REVIEW
+ALTER TABLE REVIEW
+ALTER COLUMN comment_string TYPE TEXT
 ```
 
 ### 2. Array Attribute Addition
