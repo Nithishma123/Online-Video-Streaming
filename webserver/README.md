@@ -154,7 +154,7 @@ WHERE tags && ARRAY['Action', 'Tv Shows'];
 ### 3. Composite Type Query
 ```sql
 -- Retrieve video information and metadata information
-SELECT name, (metadata).release_date, (metadata).language, (metadata).budget
+SELECT name, (metadata).release_date, (metadata).video_language, (metadata).budget
 FROM VIDEO_ITEM_BELONGSTO V
 INNER JOIN VIDEO_METADATA M ON V.video_id = M.video_id;
 ```
