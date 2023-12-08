@@ -107,13 +107,13 @@ $$ LANGUAGE plpgsql;
 
 -- Create a trigger for monthly subscriber updates
 CREATE TRIGGER update_subscription_status_monthly
-AFTER INSERT OR UPDATE ON MONTHLY_SUBSCRIBER
+AFTER INSERT OR UPDATE OR DELETE ON MONTHLY_SUBSCRIBER
 FOR EACH ROW
 EXECUTE FUNCTION update_subscription_status();
 
 -- Create a trigger for annual subscriber updates
 CREATE TRIGGER update_subscription_status_annual
-AFTER INSERT OR UPDATE ON ANNUAL_SUBSCRIBER
+AFTER INSERT OR UPDATE OR DELETE ON ANNUAL_SUBSCRIBER
 FOR EACH ROW
 EXECUTE FUNCTION update_subscription_status();
 ```
