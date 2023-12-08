@@ -159,6 +159,8 @@ The trigger (update_subscription_status_monthly) updates the subscription status
 SELECT UI.name, UI.subscription_status from USER_INFORMATION UI
 INNER JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID
 ```
+**Result:**
+
 
 **Trigger On UPDATE:**
 
