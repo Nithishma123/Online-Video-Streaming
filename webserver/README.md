@@ -144,6 +144,12 @@ Insertion of a new record into the MONTHLY_SUBSCRIBER table.
 **Trigger Action:**
 The trigger (update_subscription_status_monthly) updates the subscription status in the USER_INFORMATION table based on the user's monthly subscription plan.
 
+**Before Trigger:**
+```sql
+SELECT UI.name, UI.subscription_status from USER_INFORMATION UI
+INNER JOIN MONTHLY_SUBSCRIBER M ON M.USER_ID=UI.USER_ID
+```
+
 **Trigger On UPDATE:**
 
 ```sql
